@@ -2,7 +2,6 @@
 require_once '../includes/config.php';
 require_once './functions.php';
 // Include PHPMailer classes
-require_once '../PHPMailer/src/PHPMailerAutoload.php';
 require_once '../PHPMailer/src/Exception.php';
 require_once '../PHPMailer/src/PHPMailer.php';
 require_once '../PHPMailer/src/SMTP.php';
