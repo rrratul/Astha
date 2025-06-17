@@ -1,3 +1,56 @@
+<?php
+
+session_start();
+
+// Include functions
+require_once '../login_user/functions.php';
+
+// Check if user is logged in
+if (!isLoggedIn()) {
+    header("Location: ../login_user/login_user.php");
+    exit();
+}
+
+// Check if user has the right role (prevent redirect loop)
+if (isset($_SESSION['user_role']) && $_SESSION['user_role'] !== 'senior') {
+    // Only redirect if we're not already on the correct page
+    $current_url = $_SERVER['REQUEST_URI'];
+    if (strpos($current_url, '/elderly/') !== false) {
+        // We're on elderly page but wrong role, redirect to correct dashboard
+        switch ($_SESSION['user_role']) {
+            case 'caregiver':
+                header("Location: ../caregiver/index.php");
+                exit();
+            case 'family_member':
+                header("Location: ../family/index.php");
+                exit();
+            case 'healthcare_provider':
+                header("Location: ../healthcare/index.php");
+                exit();
+            default:
+                header("Location: ../login_user/login_user.php");
+                exit();
+        }
+    }
+}
+
+// If no role is set, logout
+if (!isset($_SESSION['user_role'])) {
+    header("Location: logout.php");
+    exit();
+}
+
+// Update last activity if the column exists
+require_once '../signup_user/config.php';
+if (isset($_SESSION['user_id'])) {
+    $columnCheck = $conn->query("SHOW COLUMNS FROM users LIKE 'last_activity'");
+    if ($columnCheck->num_rows > 0) {
+        $updateStmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE id = ?");
+        $updateStmt->bind_param("i", $_SESSION['user_id']);
+        $updateStmt->execute();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -45,479 +98,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/brands.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM8d7xj1z5l5c5e5e5e5e5e5e5e5e5e5e5e5" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/solid.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM8d7xj1z5l5c5e5e5e5e5e5e5e5e5e5e5e5" crossorigin="anonymous">
         <link rel="stylesheet" href="./includes/style.css">
-        <style>
-            /* Additional Professional Styles */
-            .accessibility-controls {
-                position: fixed;
-                bottom: 100px;
-                left: 30px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                z-index: 99;
-            }
-            
-            .accessibility-controls button {
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                background: white;
-                border: none;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-            }
-            
-            .accessibility-controls button:hover {
-                background: #e6f7f9;
-                transform: translateY(-2px);
-                box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-            }
-            
-            .feature-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 25px;
-                margin-bottom: 40px;
-            }
-            
-            .feature-card {
-                animation: fadeIn 0.5s ease-out;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .feature-card-content {
-                flex-grow: 1;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .feature-actions {
-                margin-top: auto;
-            }
-            
-            .dashboard-welcome {
-                background-color: #ffffff;
-                border-radius: 16px;
-                box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-                padding: 30px;
-                margin-bottom: 30px;
-                animation: slideInUp 0.5s ease-out;
-                border: 1px solid rgba(0,150,173,0.1);
-            }
-            
-            .trust-section {
-                background: linear-gradient(135deg, #f8f9fa 0%, #e9f7fb 100%);
-                padding: 30px;
-                border-radius: 16px;
-                margin: 40px 0;
-                text-align: center;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            }
-            
-            .trust-section h2 {
-                color: #0096ad;
-                margin-bottom: 25px;
-                font-size: 1.8rem;
-            }
-            
-            .testimonials {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 20px;
-                justify-content: center;
-            }
-            
-            .testimonial-card {
-                background: white;
-                padding: 25px;
-                border-radius: 12px;
-                width: 300px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-                text-align: left;
-            }
-            
-            .testimonial-header {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                margin-bottom: 15px;
-            }
-            
-            .testimonial-image {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                object-fit: cover;
-            }
-            
-            .testimonial-content p {
-                color: #4a5568;
-                font-style: italic;
-                line-height: 1.6;
-                margin-bottom: 10px;
-            }
-            
-            .testimonial-name {
-                font-weight: 700;
-                margin-bottom: 3px;
-            }
-            
-            .testimonial-role {
-                font-size: 0.9rem;
-                color: #718096;
-            }
-            
-            .custom-footer {
-                background: #2d3748;
-                color: white;
-                padding: 50px 0 20px;
-                margin-top: 60px;
-                position: relative;
-            }
-            
-            .footer-content {
-                max-width: 1400px;
-                margin: 0 auto;
-                padding: 0 24px;
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 30px;
-            }
-            
-            .footer-section h3 {
-                color: #e2e8f0;
-                font-size: 1.3rem;
-                margin-bottom: 20px;
-                position: relative;
-                padding-bottom: 10px;
-            }
-            
-            .footer-section h3:after {
-                content: '';
-                position: absolute;
-                width: 50px;
-                height: 2px;
-                background: #0096ad;
-                bottom: 0;
-                left: 0;
-            }
-            
-            .footer-links {
-                list-style: none;
-                padding: 0;
-            }
-            
-            .footer-links li {
-                margin-bottom: 10px;
-            }
-            
-            .footer-links a {
-                color: #cbd5e0;
-                text-decoration: none;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-            
-            .footer-links a:hover {
-                color: #0096ad;
-                transform: translateX(5px);
-            }
-            
-            .footer-contact p {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 15px;
-                color: #cbd5e0;
-            }
-            
-            .footer-contact svg {
-                width: 18px;
-                height: 18px;
-                flex-shrink: 0;
-            }
-            
-            .footer-social {
-                display: flex;
-                gap: 15px;
-                margin-top: 20px;
-            }
-            
-            .social-icon {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: rgba(255,255,255,0.1);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-            }
-            
-            .social-icon:hover {
-                background: #0096ad;
-                transform: translateY(-5px);
-            }
-            
-            .social-icon svg {
-                width: 20px;
-                height: 20px;
-                fill: white;
-            }
-            
-            .footer-bottom {
-                max-width: 1400px;
-                margin: 40px auto 0;
-                padding: 20px 24px 0;
-                border-top: 1px solid rgba(255,255,255,0.1);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                color: #a0aec0;
-                font-size: 0.9rem;
-            }
-            
-            .footer-bottom-links {
-                display: flex;
-                gap: 20px;
-            }
-            
-            .footer-bottom-links a {
-                color: #a0aec0;
-                text-decoration: none;
-                transition: all 0.3s ease;
-            }
-            
-            .footer-bottom-links a:hover {
-                color: #0096ad;
-            }
-            
-            /* News Section Styles */
-            .daily-news-section {
-                background-color: #ffffff;
-                border-radius: 16px;
-                box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-                padding: 30px;
-                margin-bottom: 30px;
-                animation: slideInUp 0.6s ease-out;
-                border: 1px solid rgba(0,150,173,0.1);
-            }
-            
-            .section-heading {
-                font-size: 1.8rem;
-                color: #2d3748;
-                margin-bottom: 20px;
-                text-align: center;
-                position: relative;
-            }
-            
-            .section-heading:after {
-                content: '';
-                position: absolute;
-                width: 80px;
-                height: 3px;
-                background: #0096ad;
-                bottom: -10px;
-                left: 50%;
-                transform: translateX(-50%);
-            }
-            
-            .news-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-                margin-top: 30px;
-                margin-bottom: 20px;
-            }
-            
-            .news-card {
-                background-color: #f8f9fa;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-            
-            .news-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-            }
-            
-            .news-image {
-                width: 100%;
-                height: 170px;
-                object-fit: cover;
-            }
-            
-            .news-content {
-                padding: 20px;
-            }
-            
-            .news-category {
-                font-size: 0.85rem;
-                color: #0096ad;
-                text-transform: uppercase;
-                font-weight: 600;
-                margin-bottom: 8px;
-                display: inline-block;
-            }
-            
-            .news-title {
-                font-size: 1.2rem;
-                line-height: 1.5;
-                font-weight: 700;
-                margin-bottom: 10px;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
-            
-            .news-excerpt {
-                color: #4a5568;
-                margin-bottom: 15px;
-                display: -webkit-box;
-                -webkit-line-clamp: 3;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-                font-size: 0.95rem;
-                line-height: 1.5;
-            }
-            
-            .news-metadata {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                color: #718096;
-                font-size: 0.85rem;
-                margin-top: auto;
-            }
-            
-            .news-date {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-            }
-            
-            .news-actions {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 15px;
-            }
-            
-            .news-link {
-                color: #0096ad;
-                text-decoration: none;
-                font-weight: 600;
-                font-size: 0.9rem;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                transition: color 0.3s ease;
-            }
-            
-            .news-link:hover {
-                color: #007489;
-            }
-            
-            .see-all-news {
-                text-align: center;
-                margin-top: 20px;
-            }
-            
-            .see-all-link {
-                background-color: #0096ad;
-                color: white;
-                text-decoration: none;
-                padding: 12px 25px;
-                border-radius: 50px;
-                font-weight: 600;
-                font-size: 1rem;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 10px rgba(0,150,173,0.2);
-            }
-            
-            .see-all-link:hover {
-                background-color: #007489;
-                transform: translateY(-2px);
-                box-shadow: 0 6px 15px rgba(0,150,173,0.3);
-            }
-            
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            
-            @keyframes slideInUp {
-                from { 
-                    opacity: 0;
-                    transform: translateY(30px);
-                }
-                to { 
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            
-            @media (max-width: 992px) {
-                .feature-grid, .news-grid {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-                
-                .footer-content {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-            }
-            
-            @media (max-width: 768px) {
-                .feature-grid, .news-grid {
-                    grid-template-columns: 1fr;
-                }
-                
-                .testimonials {
-                    flex-direction: column;
-                    align-items: center;
-                }
-            }
-            
-            @media (max-width: 576px) {
-                .footer-content {
-                    grid-template-columns: 1fr;
-                }
-                
-                .footer-bottom {
-                    flex-direction: column;
-                    gap: 15px;
-                    text-align: center;
-                }
-                
-                .footer-bottom-links {
-                    justify-content: center;
-                }
-                
-                .accessibility-controls {
-                    bottom: 90px;
-                    left: 20px;
-                }
-                
-                .accessibility-controls button {
-                    width: 40px;
-                    height: 40px;
-                }
-            }
-        </style>
+        <link rel="stylesheet" href="./includes/dashboard.css">
     </head>
     <body>
           

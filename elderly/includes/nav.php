@@ -1,3 +1,10 @@
+<nav class="main-nav">
+    <div class="nav-user-info">
+        <span class="user-welcome">Welcome, <?php echo htmlspecialchars($user_first_name); ?></span>
+        <span class="user-role">(<?php echo ucfirst(str_replace('_', ' ', $user_role)); ?>)</span>
+        <!-- <a href="../login_user/logout.php" class="logout-btn">Logout</a> -->
+    </div>
+
 <header role="banner" class="ui-header">
             <div class="header-container">
                 <div class="ui-header-logo">
@@ -99,7 +106,8 @@
                                     Help & Support
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a href="./logout.php" role="menuitem" class="logout-link">
+                                  <span>Welcome, <?php echo htmlspecialchars($_SESSION['user_first_name'] ?? 'User'); ?></span>
+                                <a href="../logout.php" role="menuitem" class="logout-link">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                         <polyline points="16 17 21 12 16 7"></polyline>

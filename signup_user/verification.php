@@ -1,33 +1,59 @@
 <?php
+require_once __DIR__ . '/../PHPMailer-master/src/Exception.php';
+require_once __DIR__ . '/../PHPMailer-master/src/PHPMailer.php';
+require_once __DIR__ . '/../PHPMailer-master/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 /**
  * Send verification email with OTP using PHPMailer
  */
 function sendVerificationEmail($email, $name, $otp) {
-    // Include PHPMailer autoloader
-    require '../PHPMailer/src/Exception.php';
-    require '../PHPMailer/src/PHPMailer.php';
-    require '../PHPMailer/src/SMTP.php';
-    
-    // Create PHPMailer instance
-    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-    
     try {
+        // Check if PHPMailer files exist first
+        $phpmailer_path = __DIR__ . '/../PHPMailer-master/src/PHPMailer.php';
+        if (!file_exists($phpmailer_path)) {
+            error_log("PHPMailer not found at: " . $phpmailer_path);
+            file_put_contents(__DIR__ . '/email_error.log', date('Y-m-d H:i:s') . " - PHPMailer files not found at: $phpmailer_path\n", FILE_APPEND);
+            return false;
+        }
+        
+        // Create PHPMailer instance
+        $mail = new PHPMailer(true);
+        
+        // Enable debugging for troubleshooting
+        $mail->SMTPDebug = 2; // Change to 0 for production
+        $mail->Debugoutput = function($str, $level) {
+            file_put_contents(__DIR__ . '/email_error.log', date('Y-m-d H:i:s') . " - SMTP Debug: $str\n", FILE_APPEND);
+        };
+        
         // Server settings
-        $mail->SMTPDebug = 0; // Set to 0 for production
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'shohochor.ai@gmail.com'; 
-        $mail->Password = 'vuet esfo cjob euee'; // App password
-        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port = 465;
+        $mail->Username = 'shohochor.ai@gmail.com';
+        $mail->Password = 'fahh fgzi bmfp slbs'; 
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
         
-        // Sender and recipient
-        $mail->setFrom('shohochor.ai@gmail.com', 'Shohochor');
+        // Set timeouts
+        $mail->Timeout = 60;
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
+        
+        // Recipients
+        $mail->setFrom('astha.ltd.office@gmail.com', 'Shohochor');
         $mail->addAddress($email, $name);
-        $mail->addReplyTo('shohochor.ai@gmail.com', 'Shohochor Support');
+        $mail->addReplyTo('astha.ltd.office@gmail.com', 'Shohochor Support');
         
-        // Email content
+        // Content
         $mail->isHTML(true);
         $mail->Subject = "Verify Your Shohochor Account";
         $mail->Body = "
@@ -53,11 +79,32 @@ function sendVerificationEmail($email, $name, $otp) {
         $mail->AltBody = "Hello $name, Your verification code is: $otp. This code will expire in 1 hour.";
         
         // Send email
-        $mail->send();
-        return true;
+        $result = $mail->send();
+        
+        if ($result) {
+            // Log success
+            error_log("Verification email sent successfully to: $email");
+            file_put_contents(__DIR__ . '/email_log.txt', date('Y-m-d H:i:s') . " - Verification email sent to $email with OTP: $otp\n", FILE_APPEND);
+            return true;
+        } else {
+            file_put_contents(__DIR__ . '/email_error.log', date('Y-m-d H:i:s') . " - Email send failed but no exception thrown\n", FILE_APPEND);
+            return false;
+        }
+        
     } catch (Exception $e) {
         // Log the error for debugging
-        error_log("Mailer Error: " . $mail->ErrorInfo);
+        $errorMessage = "Mailer Error: " . $e->getMessage();
+        error_log($errorMessage);
+        file_put_contents(__DIR__ . '/email_error.log', date('Y-m-d H:i:s') . " - $errorMessage\n", FILE_APPEND);
+        
+        // Also log SMTP-specific errors
+        if (isset($mail) && $mail->ErrorInfo) {
+            $smtpError = "SMTP Error: " . $mail->ErrorInfo;
+            error_log($smtpError);
+            file_put_contents(__DIR__ . '/email_error.log', date('Y-m-d H:i:s') . " - $smtpError\n", FILE_APPEND);
+        }
+        
         return false;
     }
 }
+?>

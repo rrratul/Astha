@@ -94,7 +94,7 @@ try {
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'shohochor.ai@gmail.com';
-            $mail->Password = 'vuet esfo cjob euee';
+            $mail->Password = 'fahh fgzi bmfp slbs';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port = 465;
             
@@ -155,7 +155,7 @@ try {
             $subscriberMail->Host = 'smtp.gmail.com';
             $subscriberMail->SMTPAuth = true;
             $subscriberMail->Username = 'shohochor.ai@gmail.com';
-            $subscriberMail->Password = 'vuet esfo cjob euee';
+            $subscriberMail->Password = 'fahh fgzi bmfp slbs';
             $subscriberMail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $subscriberMail->Port = 465;
             

@@ -70,7 +70,7 @@ try {
                 $admin_mail->Host = 'smtp.gmail.com';
                 $admin_mail->SMTPAuth = true;
                 $admin_mail->Username = 'shohochor.ai@gmail.com'; 
-                $admin_mail->Password = 'vuet esfo cjob euee'; // App password
+                $admin_mail->Password = 'fahh fgzi bmfp slbs'; // App password
                 $admin_mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                 $admin_mail->Port = 465;
                 
@@ -169,7 +169,7 @@ try {
                 $user_mail->Host = 'smtp.gmail.com';
                 $user_mail->SMTPAuth = true;
                 $user_mail->Username = 'shohochor.ai@gmail.com';
-                $user_mail->Password = 'vuet esfo cjob euee';
+                $user_mail->Password = 'fahh fgzi bmfp slbs'; // App password
                 $user_mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                 $user_mail->Port = 465;
                 
