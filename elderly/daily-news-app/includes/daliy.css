@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily News</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+        }
+        h2 {
+            font-size: 2em;
+            color: #2980b9;
+        }
+        p {
+            font-size: 1.2em;
+        }
+        .news-article {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .date {
+            font-size: 1em;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Daily News</h1>
+
+    <?php foreach ($newsArticles as $article): ?>
+        <div class="news-article">
+            <h2><?php echo htmlspecialchars($article['title']); ?></h2>
+            <p class="date"><?php echo htmlspecialchars($article['date']); ?></p>
+            <p><?php echo htmlspecialchars($article['content']); ?></p>
+        </div>
+    <?php endforeach; ?>
+
+</body>
+</html>

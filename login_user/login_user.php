@@ -1,12 +1,30 @@
 <?php
-
 session_start();
 require_once '../signup_user/config.php';
 require_once './functions.php';
 
 // Check if user is already logged in
 if (isLoggedIn()) {
-    redirectToDashboard($_SESSION['user_role']);
+    // Simple redirect without function call
+    $role = $_SESSION['user_role'];
+    switch ($role) {
+        case 'senior':
+            header("Location: ../elderly/index.php");
+            break;
+        case 'caregiver':
+            header("Location: ../caregiver/index.php");
+            break;
+        case 'family_member':
+            header("Location: ../family/index.php");
+            break;
+        case 'healthcare_provider':
+            header("Location: ../healthcare/index.php");
+            break;
+        default:
+            header("Location: ../elderly/index.php");
+            break;
+    }
+    exit();
 }
 
 // Initialize variables
@@ -58,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Successful login
                 
                 // Check if last_activity column exists before updating
-                $columns = [];
                 $columnCheck = $conn->query("SHOW COLUMNS FROM users LIKE 'last_activity'");
                 $hasLastActivity = $columnCheck->num_rows > 0;
                 
@@ -102,14 +119,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     setcookie('remember_token', $remember_token, $remember_expiry, '/', '', false, true);
                 }
                 
-                // Log successful login (check if function exists)
-                if (function_exists('logUserActivity')) {
-                    logUserActivity($user['id'], 'login', 'Successful login');
-                }
+                // Log successful login
                 file_put_contents(__DIR__ . '/login_log.txt', date('Y-m-d H:i:s') . " - Successful login: " . $email . " (Role: " . $user['role'] . ")\n", FILE_APPEND);
                 
-                // Redirect to appropriate dashboard based on role
-                redirectToDashboard($user['role']);
+                // DIRECT redirect based on role - HANDLE BOTH 'elderly' AND 'senior'
+                switch ($user['role']) {
+                    case 'senior':
+                    case 'elderly': // Add this case to handle 'elderly' role
+                        header("Location: ../elderly/index.php");
+                        break;
+                    case 'caregiver':
+                        header("Location: ../caregiver/index.php");
+                        break;
+                    case 'family_member':
+                        header("Location: ../family/index.php");
+                        break;
+                    case 'healthcare_provider':
+                        header("Location: ../healthcare/index.php");
+                        break;
+                    default:
+                        header("Location: ../elderly/index.php");
+                        break;
+                }
+                exit();
                 
             } else {
                 // Invalid password - increment login attempts
@@ -121,9 +153,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = "Invalid email or password. Attempt " . $newAttempts . "/5";
                 
                 // Log failed login attempt
-                if (function_exists('logUserActivity')) {
-                    logUserActivity($user['id'], 'failed_login', "Failed login attempt $newAttempts/5");
-                }
                 file_put_contents(__DIR__ . '/login_log.txt', date('Y-m-d H:i:s') . " - Failed login attempt: " . $email . " (Attempt: $newAttempts)\n", FILE_APPEND);
             }
         } else {
@@ -132,6 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Log failed login attempt for non-existent user
             file_put_contents(__DIR__ . '/login_log.txt', date('Y-m-d H:i:s') . " - Failed login attempt: " . $email . " (User not found)\n", FILE_APPEND);
         }
+        
         $stmt->close();
     }
 }
@@ -179,18 +209,34 @@ if (!isLoggedIn() && isset($_COOKIE['remember_token'])) {
         $updateStmt->execute();
         
         // Log auto login
-        if (function_exists('logUserActivity')) {
-            logUserActivity($user['id'], 'auto_login', 'Auto login via remember me token');
-        }
+        file_put_contents(__DIR__ . '/login_log.txt', date('Y-m-d H:i:s') . " - Auto login: " . $user['email'] . " (Role: " . $user['role'] . ")\n", FILE_APPEND);
         
         // Redirect to appropriate dashboard
-        redirectToDashboard($user['role']);
+        switch ($user['role']) {
+            case 'senior':
+                header("Location: ../elderly/index.php");
+                break;
+            case 'caregiver':
+                header("Location: ../caregiver/index.php");
+                break;
+            case 'family_member':
+                header("Location: ../family/index.php");
+                break;
+            case 'healthcare_provider':
+                header("Location: ../healthcare/index.php");
+                break;
+            default:
+                header("Location: ../elderly/index.php");
+                break;
+        }
+        exit();
     } else {
         // Invalid or expired token, clear cookie
         setcookie('remember_token', '', time() - 3600, '/', '', false, true);
     }
     $stmt->close();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -200,25 +246,6 @@ if (!isLoggedIn() && isset($_COOKIE['remember_token'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Shohochor</title>
     <link rel="stylesheet" href="./login.css">
-    <style>
-        .role-info {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            border-left: 4px solid #0096ad;
-        }
-        
-        .role-info ul {
-            margin: 10px 0 0 0;
-            padding-left: 20px;
-        }
-        
-        .role-info li {
-            margin: 5px 0;
-            font-size: 14px;
-        }
-    </style>
 </head>
 <body>
     <div class="ui-header">
@@ -282,16 +309,6 @@ if (!isLoggedIn() && isset($_COOKIE['remember_token'])) {
                 </div>
                 
                 <button type="submit" class="submit-btn">Sign In</button>
-                
-                <div class="role-info">
-                    <p><small>Access will be granted based on your registered role:</small></p>
-                    <ul>
-                        <li><strong>Senior:</strong> Personal health dashboard</li>
-                        <li><strong>Caregiver:</strong> Client management system</li>
-                        <li><strong>Family Member:</strong> Family care overview</li>
-                        <li><strong>Healthcare Provider:</strong> Patient management</li>
-                    </ul>
-                </div>
                 
                 <div class="signup-link">
                     <p>Don't have an account? <a href="../signup_user/signup_user.php">Sign up here</a></p>

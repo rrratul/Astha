@@ -1,59 +1,85 @@
 <?php
-
 session_start();
 
-// Include functions
+// Include required files
 require_once '../login_user/functions.php';
 
-// Check if user is logged in
+// Simple authentication check
 if (!isLoggedIn()) {
     header("Location: ../login_user/login_user.php");
     exit();
 }
 
-// Check if user has the right role (prevent redirect loop)
-if (isset($_SESSION['user_role']) && $_SESSION['user_role'] !== 'senior') {
-    // Only redirect if we're not already on the correct page
-    $current_url = $_SERVER['REQUEST_URI'];
-    if (strpos($current_url, '/elderly/') !== false) {
-        // We're on elderly page but wrong role, redirect to correct dashboard
-        switch ($_SESSION['user_role']) {
-            case 'caregiver':
-                header("Location: ../caregiver/index.php");
-                exit();
-            case 'family_member':
-                header("Location: ../family/index.php");
-                exit();
-            case 'healthcare_provider':
-                header("Location: ../healthcare/index.php");
-                exit();
-            default:
-                header("Location: ../login_user/login_user.php");
-                exit();
+// Check role - ACCEPT BOTH 'elderly' AND 'senior'
+if (isset($_SESSION['user_role'])) {
+    $allowed_roles = ['senior', 'elderly']; // Accept both role names
+    
+    if (!in_array($_SESSION['user_role'], $allowed_roles)) {
+        // Store current page to prevent redirect loops
+        $current_page = basename($_SERVER['PHP_SELF']);
+        if ($current_page === 'index.php') {
+            // Wrong role, redirect to correct dashboard
+            switch ($_SESSION['user_role']) {
+                case 'caregiver':
+                    header("Location: ../caregiver/index.php");
+                    exit();
+                case 'family_member':
+                    header("Location: ../family/index.php");
+                    exit();
+                case 'healthcare_provider':
+                    header("Location: ../healthcare/index.php");
+                    exit();
+                default:
+                    // Unknown role, logout
+                    header("Location: logout.php");
+                    exit();
+            }
         }
     }
 }
 
-// If no role is set, logout
+// Ensure session variables are set with default values
+if (!isset($_SESSION['user_first_name'])) {
+    $_SESSION['user_first_name'] = 'User';
+}
 if (!isset($_SESSION['user_role'])) {
-    header("Location: logout.php");
-    exit();
+    $_SESSION['user_role'] = 'elderly';
 }
 
-// Update last activity if the column exists
-require_once '../signup_user/config.php';
+// Update last activity if possible
 if (isset($_SESSION['user_id'])) {
-    $columnCheck = $conn->query("SHOW COLUMNS FROM users LIKE 'last_activity'");
-    if ($columnCheck->num_rows > 0) {
-        $updateStmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE id = ?");
-        $updateStmt->bind_param("i", $_SESSION['user_id']);
-        $updateStmt->execute();
+    require_once '../signup_user/config.php';
+    if (isset($conn) && $conn) {
+        $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param("i", $_SESSION['user_id']);
+            $stmt->execute();
+            $stmt->close();
+        }
     }
 }
+
+// Get current hour to determine greeting
+$hour = date('H');
+$greeting = '';
+
+if ($hour >= 5 && $hour < 12) {
+    $greeting = 'Good morning';
+} else if ($hour >= 12 && $hour < 18) {
+    $greeting = 'Good afternoon';
+} else if ($hour >= 18 && $hour < 23) {
+    $greeting = 'Good evening';
+} else {
+    $greeting = 'Good night';
+}
+
+// Set variables for use in the page
+$user_first_name = $_SESSION['user_first_name'];
+$user_role = $_SESSION['user_role'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+<head>
         <link rel="preload" as="script" href="https://cdn.ampproject.org/v0.js">
         <link rel="stylesheet" href="./style.css">
         <script async src="https://cdn.ampproject.org/v0.js"></script>
@@ -93,8 +119,7 @@ if (isset($_SESSION['user_id'])) {
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM8d7xj1z5l5c5e5e5e5e5e5e5e5e5e5e5e5" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/fontawesome.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM8d7xj1z5l5c5e5e5e5e5e5e5e5e5e5e5e5" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/brands.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM8d7xj1z5l5c5e5e5e5e5e5e5e5e5e5e5e5" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/solid.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM8d7xj1z5l5c5e5e5e5e5e5e5e5e5e5e5e5" crossorigin="anonymous">
         <link rel="stylesheet" href="./includes/style.css">
@@ -119,97 +144,80 @@ if (isset($_SESSION['user_id'])) {
         
             <div class="dashboard-welcome">
                 <div class="welcome-text">
-                    <?php
-                    // Get current hour to determine greeting
-                    $hour = date('H');
-                    $greeting = '';
-                    
-                    if ($hour >= 5 && $hour < 12) {
-                        $greeting = 'Good morning';
-                    } else if ($hour >= 12 && $hour < 18) {
-                        $greeting = 'Good afternoon';
-                    } else if ($hour >= 18 && $hour < 23) {
-                        $greeting = 'Good evening';
-                    } else {
-                        $greeting = 'Good night';
-                    }
-                    
-                    // Format today's date nicely
-                    $today = date('l, F j, Y');
-                    ?>
-                    <h1><?php echo $greeting; ?>, John!</h1>
-                    <p>Today is <?php echo $today; ?>. Here's your personalized dashboard with everything you need for the day.</p>
-                    <div class="weather-widget">
-                        <div class="weather-content">
-                            <?php
-                            // This would typically be from an API call to OpenWeatherMap or similar service
-                            // For demonstration purposes, adding placeholder data
-                            $temperature = 32; // Celsius
-                            $weather_condition = "Clear"; // Example: Clear, Rain, Cloudy, etc.
-                            $location = "Dhaka"; // This would come from geolocation
-                            $tempF = round(($temperature * 9/5) + 32); // Convert to Fahrenheit
-                            
-                            // Weather-based health tip
-                            $health_tip = "";
-                            if ($temperature > 30) {
-                                $health_tip = "It's hot today! Drink at least 2 liters of water to stay hydrated.";
-                            } else if ($temperature > 25) {
-                                $health_tip = "Pleasant weather today. Stay active and enjoy some outdoor time.";
-                            } else if ($temperature > 15) {
-                                $health_tip = "Cool weather today. Remember to dress in layers.";
-                            } else {
-                                $health_tip = "Cold today! Keep warm and drink hot beverages.";
-                            }
-                            
-                            // Select appropriate weather icon based on condition
-                            $weather_icon = "sunny";
-                            if (strpos(strtolower($weather_condition), "rain") !== false) {
-                                $weather_icon = "rainy";
-                            } else if (strpos(strtolower($weather_condition), "cloud") !== false) {
-                                $weather_icon = "cloudy";
-                            }
-                            ?>
-                            
-                            <div class="weather-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span><?php echo $location; ?></span>
+                    <h1><?php echo $greeting; ?>, <?php echo htmlspecialchars($user_first_name); ?>!</h1>
+                    <p>Welcome to your personalized elderly care dashboard. Your health and wellbeing are our priority.</p>
+                </div>
+                
+                <div class="weather-widget">
+                    <div class="weather-content">
+                        <?php
+                        // This would typically be from an API call to OpenWeatherMap or similar service
+                        // For demonstration purposes, adding placeholder data
+                        $temperature = 32; // Celsius
+                        $weather_condition = "Clear"; // Example: Clear, Rain, Cloudy, etc.
+                        $location = "Dhaka"; // This would come from geolocation
+                        $tempF = round(($temperature * 9/5) + 32); // Convert to Fahrenheit
+                        
+                        // Weather-based health tip
+                        $health_tip = "";
+                        if ($temperature > 30) {
+                            $health_tip = "It's hot today! Drink at least 2 liters of water to stay hydrated.";
+                        } else if ($temperature > 25) {
+                            $health_tip = "Pleasant weather today. Stay active and enjoy some outdoor time.";
+                        } else if ($temperature > 15) {
+                            $health_tip = "Cool weather today. Remember to dress in layers.";
+                        } else {
+                            $health_tip = "Cold today! Keep warm and drink hot beverages.";
+                        }
+                        
+                        // Select appropriate weather icon based on condition
+                        $weather_icon = "sunny";
+                        if (strpos(strtolower($weather_condition), "rain") !== false) {
+                            $weather_icon = "rainy";
+                        } else if (strpos(strtolower($weather_condition), "cloud") !== false) {
+                            $weather_icon = "cloudy";
+                        }
+                        ?>
+                        
+                        <div class="weather-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span><?php echo $location; ?></span>
+                        </div>
+                        
+                        <div class="weather-display">
+                            <?php if ($weather_icon == "sunny"): ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" viewBox="0 0 24 24" fill="#FFCC00" stroke="#FF9900" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="5" fill="#FFCC00"/>
+                                    <line x1="12" y1="1" x2="12" y2="3"/>
+                                    <line x1="12" y1="21" x2="12" y2="23"/>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                    <line x1="1" y1="12" x2="3" y2="12"/>
+                                    <line x1="21" y1="12" x2="23" y2="12"/>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                </svg>
+                            <?php elseif ($weather_icon == "rainy"): ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" viewBox="0 0 24 24" fill="#AEDCF7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="16" y1="13" x2="16" y2="21"></line>
+                                    <line x1="8" y1="13" x2="8" y2="21"></line>
+                                    <line x1="12" y1="15" x2="12" y2="23"></line>
+                                    <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path>
+                                </svg>
+                            <?php else: ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" viewBox="0 0 24 24" fill="#E1E7F0" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                                </svg>
+                            <?php endif; ?>
+                            <div class="temp-display">
+                                <span class="temp"><?php echo $temperature; ?>°C</span>
+                                <span class="temp-f"><?php echo $tempF; ?>°F</span>
                             </div>
-                            
-                            <div class="weather-display">
-                                <?php if ($weather_icon == "sunny"): ?>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" viewBox="0 0 24 24" fill="#FFCC00" stroke="#FF9900" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="5" fill="#FFCC00"/>
-                                        <line x1="12" y1="1" x2="12" y2="3"/>
-                                        <line x1="12" y1="21" x2="12" y2="23"/>
-                                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                                        <line x1="1" y1="12" x2="3" y2="12"/>
-                                        <line x1="21" y1="12" x2="23" y2="12"/>
-                                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                                    </svg>
-                                <?php elseif ($weather_icon == "rainy"): ?>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" viewBox="0 0 24 24" fill="#AEDCF7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="16" y1="13" x2="16" y2="21"></line>
-                                        <line x1="8" y1="13" x2="8" y2="21"></line>
-                                        <line x1="12" y1="15" x2="12" y2="23"></line>
-                                        <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path>
-                                    </svg>
-                                <?php else: ?>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" viewBox="0 0 24 24" fill="#E1E7F0" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
-                                    </svg>
-                                <?php endif; ?>
-                                <div class="temp-display">
-                                    <span class="temp"><?php echo $temperature; ?>°C</span>
-                                    <span class="temp-f"><?php echo $tempF; ?>°F</span>
-                                </div>
-                            </div>
-                            
-                            <div class="weather-tip">
-                                <i class="fas fa-info-circle"></i>
-                                <span><?php echo $health_tip; ?></span>
-                            </div>
+                        </div>
+                        
+                        <div class="weather-tip">
+                            <i class="fas fa-info-circle"></i>
+                            <span><?php echo $health_tip; ?></span>
                         </div>
                     </div>
                 </div>
@@ -417,7 +425,7 @@ if (isset($_SESSION['user_id'])) {
                 </div>
                 
                 <div class="see-all-news">
-                    <a href="./daily-news.php" class="see-all-link">
+                    <a href="./daily-news-app/daily-news.php" class="see-all-link">
                         Read All News
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M5 12h14"></path>

@@ -911,3 +911,429 @@
 
 2025-06-17 22:23:50 - SMTP Debug: SERVER -> CLIENT: 221 2.0.0 closing connection d2e1a72fcca58-748e0fb4574sm734902b3a.114 - gsmtp
 
+2025-06-18 06:31:29 - SMTP Debug: SERVER -> CLIENT: 220 smtp.gmail.com ESMTP 98e67ed59e1d1-313c19cd5a6sm11706102a91.12 - gsmtp
+
+2025-06-18 06:31:29 - SMTP Debug: CLIENT -> SERVER: EHLO localhost
+
+2025-06-18 06:31:30 - SMTP Debug: SERVER -> CLIENT: 250-smtp.gmail.com at your service, [59.153.103.113]
+250-SIZE 35882577
+250-8BITMIME
+250-STARTTLS
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+
+2025-06-18 06:31:30 - SMTP Debug: CLIENT -> SERVER: STARTTLS
+
+2025-06-18 06:31:30 - SMTP Debug: SERVER -> CLIENT: 220 2.0.0 Ready to start TLS
+
+2025-06-18 06:31:30 - SMTP Debug: CLIENT -> SERVER: EHLO localhost
+
+2025-06-18 06:31:30 - SMTP Debug: SERVER -> CLIENT: 250-smtp.gmail.com at your service, [59.153.103.113]
+250-SIZE 35882577
+250-8BITMIME
+250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+
+2025-06-18 06:31:30 - SMTP Debug: CLIENT -> SERVER: AUTH LOGIN
+
+2025-06-18 06:31:30 - SMTP Debug: SERVER -> CLIENT: 334 VXNlcm5hbWU6
+
+2025-06-18 06:31:30 - SMTP Debug: CLIENT -> SERVER: [credentials hidden]
+2025-06-18 06:31:31 - SMTP Debug: SERVER -> CLIENT: 334 UGFzc3dvcmQ6
+
+2025-06-18 06:31:31 - SMTP Debug: CLIENT -> SERVER: [credentials hidden]
+2025-06-18 06:31:31 - SMTP Debug: SERVER -> CLIENT: 235 2.7.0 Accepted
+
+2025-06-18 06:31:31 - SMTP Debug: CLIENT -> SERVER: MAIL FROM:<astha.ltd.office@gmail.com>
+
+2025-06-18 06:31:31 - SMTP Debug: SERVER -> CLIENT: 250 2.1.0 OK 98e67ed59e1d1-313c19cd5a6sm11706102a91.12 - gsmtp
+
+2025-06-18 06:31:31 - SMTP Debug: CLIENT -> SERVER: RCPT TO:<rratul212025@bscse.uiu.ac.bd>
+
+2025-06-18 06:31:31 - SMTP Debug: SERVER -> CLIENT: 250 2.1.5 OK 98e67ed59e1d1-313c19cd5a6sm11706102a91.12 - gsmtp
+
+2025-06-18 06:31:31 - SMTP Debug: CLIENT -> SERVER: DATA
+
+2025-06-18 06:31:32 - SMTP Debug: SERVER -> CLIENT: 354 Go ahead 98e67ed59e1d1-313c19cd5a6sm11706102a91.12 - gsmtp
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Date: Wed, 18 Jun 2025 06:31:29 +0200
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: To: Rezaur Rahman <rratul212025@bscse.uiu.ac.bd>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: From: Shohochor <astha.ltd.office@gmail.com>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Reply-To: Shohochor Support <astha.ltd.office@gmail.com>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Subject: Verify Your Shohochor Account
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Message-ID: <OLawpvQPRyoRKhvi8OjqfZ0t1mxTB0TUiu9IxXhnL0@localhost>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: X-Mailer: PHPMailer 6.9.3 (https://github.com/PHPMailer/PHPMailer)
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: MIME-Version: 1.0
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Content-Type: multipart/alternative;
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:  boundary="b1=_OLawpvQPRyoRKhvi8OjqfZ0t1mxTB0TUiu9IxXhnL0"
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Content-Transfer-Encoding: 8bit
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: --b1=_OLawpvQPRyoRKhvi8OjqfZ0t1mxTB0TUiu9IxXhnL0
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Content-Type: text/plain; charset=us-ascii
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Hello Rezaur Rahman, Your verification code is: 233862. This code will expire in 1 hour.
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: --b1=_OLawpvQPRyoRKhvi8OjqfZ0t1mxTB0TUiu9IxXhnL0
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: Content-Type: text/html; charset=us-ascii
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:             <div style='text-align: center; padding: 20px;'>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                 <h1 style='color: #0096ad;'>Shohochor</h1>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:             <div style='background-color: #f5f7f9; padding: 20px; border-radius: 5px;'>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                 <h2>Hello Rezaur Rahman,</h2>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                 <p>Thank you for registering with Shohochor. To complete your registration, please use the following verification code:</p>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                 <div style='text-align: center; margin: 30px 0;'>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                     <div style='font-size: 24px; font-weight: bold; letter-spacing: 5px; padding: 15px; background-color: #ffffff; border: 1px solid #ddd; border-radius: 5px;'>233862</div>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                 </div>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                 <p>This code will expire in 1 hour.</p>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                 <p>If you didn't request this code, please ignore this email.</p>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:             <div style='text-align: center; margin-top: 20px; font-size: 12px; color: #666;'>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:                 <p>&copy; 2025 Shohochor. All rights reserved.</p>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER:         </div>
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: --b1=_OLawpvQPRyoRKhvi8OjqfZ0t1mxTB0TUiu9IxXhnL0--
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: .
+
+2025-06-18 06:31:32 - SMTP Debug: SERVER -> CLIENT: 250 2.0.0 OK  1750221093 98e67ed59e1d1-313c19cd5a6sm11706102a91.12 - gsmtp
+
+2025-06-18 06:31:32 - SMTP Debug: CLIENT -> SERVER: QUIT
+
+2025-06-18 06:31:32 - SMTP Debug: SERVER -> CLIENT: 221 2.0.0 closing connection 98e67ed59e1d1-313c19cd5a6sm11706102a91.12 - gsmtp
+
+2025-06-18 07:05:26 - SMTP Debug: SERVER -> CLIENT: 220 smtp.gmail.com ESMTP d9443c01a7336-2365d88c200sm90497325ad.51 - gsmtp
+
+2025-06-18 07:05:26 - SMTP Debug: CLIENT -> SERVER: EHLO localhost
+
+2025-06-18 07:05:26 - SMTP Debug: SERVER -> CLIENT: 250-smtp.gmail.com at your service, [59.153.103.114]
+250-SIZE 35882577
+250-8BITMIME
+250-STARTTLS
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+
+2025-06-18 07:05:26 - SMTP Debug: CLIENT -> SERVER: STARTTLS
+
+2025-06-18 07:05:26 - SMTP Debug: SERVER -> CLIENT: 220 2.0.0 Ready to start TLS
+
+2025-06-18 07:05:26 - SMTP Debug: CLIENT -> SERVER: EHLO localhost
+
+2025-06-18 07:05:26 - SMTP Debug: SERVER -> CLIENT: 250-smtp.gmail.com at your service, [59.153.103.114]
+250-SIZE 35882577
+250-8BITMIME
+250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+
+2025-06-18 07:05:26 - SMTP Debug: CLIENT -> SERVER: AUTH LOGIN
+
+2025-06-18 07:05:27 - SMTP Debug: SERVER -> CLIENT: 334 VXNlcm5hbWU6
+
+2025-06-18 07:05:27 - SMTP Debug: CLIENT -> SERVER: [credentials hidden]
+2025-06-18 07:05:27 - SMTP Debug: SERVER -> CLIENT: 334 UGFzc3dvcmQ6
+
+2025-06-18 07:05:27 - SMTP Debug: CLIENT -> SERVER: [credentials hidden]
+2025-06-18 07:05:27 - SMTP Debug: SERVER -> CLIENT: 235 2.7.0 Accepted
+
+2025-06-18 07:05:27 - SMTP Debug: CLIENT -> SERVER: MAIL FROM:<astha.ltd.office@gmail.com>
+
+2025-06-18 07:05:27 - SMTP Debug: SERVER -> CLIENT: 250 2.1.0 OK d9443c01a7336-2365d88c200sm90497325ad.51 - gsmtp
+
+2025-06-18 07:05:27 - SMTP Debug: CLIENT -> SERVER: RCPT TO:<asowdagor212010@bscse.uiu.ac.bd>
+
+2025-06-18 07:05:28 - SMTP Debug: SERVER -> CLIENT: 250 2.1.5 OK d9443c01a7336-2365d88c200sm90497325ad.51 - gsmtp
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: DATA
+
+2025-06-18 07:05:28 - SMTP Debug: SERVER -> CLIENT: 354 Go ahead d9443c01a7336-2365d88c200sm90497325ad.51 - gsmtp
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Date: Wed, 18 Jun 2025 07:05:25 +0200
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: To: Aditya <asowdagor212010@bscse.uiu.ac.bd>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: From: Shohochor <astha.ltd.office@gmail.com>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Reply-To: Shohochor Support <astha.ltd.office@gmail.com>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Subject: Verify Your Shohochor Account
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Message-ID: <BfJ0WP2lVLJNMnDiu1m4IDT8z755LL5RAXAtUbBHY@localhost>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: X-Mailer: PHPMailer 6.9.3 (https://github.com/PHPMailer/PHPMailer)
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: MIME-Version: 1.0
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Content-Type: multipart/alternative;
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:  boundary="b1=_BfJ0WP2lVLJNMnDiu1m4IDT8z755LL5RAXAtUbBHY"
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Content-Transfer-Encoding: 8bit
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: --b1=_BfJ0WP2lVLJNMnDiu1m4IDT8z755LL5RAXAtUbBHY
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Content-Type: text/plain; charset=us-ascii
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Hello Aditya, Your verification code is: 241296. This code will expire in 1 hour.
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: --b1=_BfJ0WP2lVLJNMnDiu1m4IDT8z755LL5RAXAtUbBHY
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: Content-Type: text/html; charset=us-ascii
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:             <div style='text-align: center; padding: 20px;'>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                 <h1 style='color: #0096ad;'>Shohochor</h1>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:             <div style='background-color: #f5f7f9; padding: 20px; border-radius: 5px;'>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                 <h2>Hello Aditya,</h2>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                 <p>Thank you for registering with Shohochor. To complete your registration, please use the following verification code:</p>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                 <div style='text-align: center; margin: 30px 0;'>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                     <div style='font-size: 24px; font-weight: bold; letter-spacing: 5px; padding: 15px; background-color: #ffffff; border: 1px solid #ddd; border-radius: 5px;'>241296</div>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                 </div>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                 <p>This code will expire in 1 hour.</p>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                 <p>If you didn't request this code, please ignore this email.</p>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:             <div style='text-align: center; margin-top: 20px; font-size: 12px; color: #666;'>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:                 <p>&copy; 2025 Shohochor. All rights reserved.</p>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER:         </div>
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: --b1=_BfJ0WP2lVLJNMnDiu1m4IDT8z755LL5RAXAtUbBHY--
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 07:05:28 - SMTP Debug: CLIENT -> SERVER: .
+
+2025-06-18 07:05:29 - SMTP Debug: SERVER -> CLIENT: 250 2.0.0 OK  1750223129 d9443c01a7336-2365d88c200sm90497325ad.51 - gsmtp
+
+2025-06-18 07:05:29 - SMTP Debug: CLIENT -> SERVER: QUIT
+
+2025-06-18 07:05:29 - SMTP Debug: SERVER -> CLIENT: 221 2.0.0 closing connection d9443c01a7336-2365d88c200sm90497325ad.51 - gsmtp
+
+2025-06-18 08:03:26 - SMTP Debug: SERVER -> CLIENT: 220 smtp.gmail.com ESMTP d9443c01a7336-2365d88e554sm91685635ad.16 - gsmtp
+
+2025-06-18 08:03:26 - SMTP Debug: CLIENT -> SERVER: EHLO localhost
+
+2025-06-18 08:03:26 - SMTP Debug: SERVER -> CLIENT: 250-smtp.gmail.com at your service, [59.153.103.118]
+250-SIZE 35882577
+250-8BITMIME
+250-STARTTLS
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+
+2025-06-18 08:03:26 - SMTP Debug: CLIENT -> SERVER: STARTTLS
+
+2025-06-18 08:03:26 - SMTP Debug: SERVER -> CLIENT: 220 2.0.0 Ready to start TLS
+
+2025-06-18 08:03:26 - SMTP Debug: CLIENT -> SERVER: EHLO localhost
+
+2025-06-18 08:03:26 - SMTP Debug: SERVER -> CLIENT: 250-smtp.gmail.com at your service, [59.153.103.118]
+250-SIZE 35882577
+250-8BITMIME
+250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+
+2025-06-18 08:03:26 - SMTP Debug: CLIENT -> SERVER: AUTH LOGIN
+
+2025-06-18 08:03:27 - SMTP Debug: SERVER -> CLIENT: 334 VXNlcm5hbWU6
+
+2025-06-18 08:03:27 - SMTP Debug: CLIENT -> SERVER: [credentials hidden]
+2025-06-18 08:03:27 - SMTP Debug: SERVER -> CLIENT: 334 UGFzc3dvcmQ6
+
+2025-06-18 08:03:27 - SMTP Debug: CLIENT -> SERVER: [credentials hidden]
+2025-06-18 08:03:27 - SMTP Debug: SERVER -> CLIENT: 235 2.7.0 Accepted
+
+2025-06-18 08:03:27 - SMTP Debug: CLIENT -> SERVER: MAIL FROM:<astha.ltd.office@gmail.com>
+
+2025-06-18 08:03:27 - SMTP Debug: SERVER -> CLIENT: 250 2.1.0 OK d9443c01a7336-2365d88e554sm91685635ad.16 - gsmtp
+
+2025-06-18 08:03:27 - SMTP Debug: CLIENT -> SERVER: RCPT TO:<rratul212025@bscse.uiu.ac.bd>
+
+2025-06-18 08:03:28 - SMTP Debug: SERVER -> CLIENT: 250 2.1.5 OK d9443c01a7336-2365d88e554sm91685635ad.16 - gsmtp
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: DATA
+
+2025-06-18 08:03:28 - SMTP Debug: SERVER -> CLIENT: 354 Go ahead d9443c01a7336-2365d88e554sm91685635ad.16 - gsmtp
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Date: Wed, 18 Jun 2025 08:03:25 +0200
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: To: Rezaur Rahman Ratul <rratul212025@bscse.uiu.ac.bd>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: From: Shohochor <astha.ltd.office@gmail.com>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Reply-To: Shohochor Support <astha.ltd.office@gmail.com>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Subject: Verify Your Shohochor Account
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Message-ID: <cysidiWsz7zMv6LJUDmmh4k2tCzIrhs3Fx1mANZR5BQ@localhost>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: X-Mailer: PHPMailer 6.9.3 (https://github.com/PHPMailer/PHPMailer)
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: MIME-Version: 1.0
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Content-Type: multipart/alternative;
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:  boundary="b1=_cysidiWsz7zMv6LJUDmmh4k2tCzIrhs3Fx1mANZR5BQ"
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Content-Transfer-Encoding: 8bit
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: --b1=_cysidiWsz7zMv6LJUDmmh4k2tCzIrhs3Fx1mANZR5BQ
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Content-Type: text/plain; charset=us-ascii
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Hello Rezaur Rahman Ratul, Your verification code is: 789448. This code will expire in 1 hour.
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: --b1=_cysidiWsz7zMv6LJUDmmh4k2tCzIrhs3Fx1mANZR5BQ
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: Content-Type: text/html; charset=us-ascii
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:             <div style='text-align: center; padding: 20px;'>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                 <h1 style='color: #0096ad;'>Shohochor</h1>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:             <div style='background-color: #f5f7f9; padding: 20px; border-radius: 5px;'>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                 <h2>Hello Rezaur Rahman Ratul,</h2>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                 <p>Thank you for registering with Shohochor. To complete your registration, please use the following verification code:</p>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                 <div style='text-align: center; margin: 30px 0;'>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                     <div style='font-size: 24px; font-weight: bold; letter-spacing: 5px; padding: 15px; background-color: #ffffff; border: 1px solid #ddd; border-radius: 5px;'>789448</div>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                 </div>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                 <p>This code will expire in 1 hour.</p>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                 <p>If you didn't request this code, please ignore this email.</p>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:             <div style='text-align: center; margin-top: 20px; font-size: 12px; color: #666;'>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:                 <p>&copy; 2025 Shohochor. All rights reserved.</p>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:             </div>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER:         </div>
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: --b1=_cysidiWsz7zMv6LJUDmmh4k2tCzIrhs3Fx1mANZR5BQ--
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: 
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: .
+
+2025-06-18 08:03:28 - SMTP Debug: SERVER -> CLIENT: 250 2.0.0 OK  1750226609 d9443c01a7336-2365d88e554sm91685635ad.16 - gsmtp
+
+2025-06-18 08:03:28 - SMTP Debug: CLIENT -> SERVER: QUIT
+
+2025-06-18 08:03:29 - SMTP Debug: SERVER -> CLIENT: 221 2.0.0 closing connection d9443c01a7336-2365d88e554sm91685635ad.16 - gsmtp
+
