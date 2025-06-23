@@ -54,8 +54,10 @@ if (empty($profile_image)) {
     $user_initial = strtoupper(substr($user_first_name, 0, 1));
     $profile_image = "https://via.placeholder.com/60x60/667eea/ffffff?text=" . $user_initial;
 }
-?>
 
+// Define current page
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
 <amp-sidebar id="sidebar1" layout="nodisplay" side="right">
     <div class="sidebar-header">
         <div class="logo-mobile">
@@ -171,3 +173,130 @@ if (empty($profile_image)) {
         </a>
     </div>
 </amp-sidebar>
+
+<!-- Fixed mobile navigation bar -->
+<div class="mobile-nav">
+    <div class="mobile-nav-container">
+        <a href="../index.php" class="mobile-nav-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="../health/index.php" class="mobile-nav-item <?php echo (strpos($current_page, 'health') !== false) ? 'active' : ''; ?>">
+            <i class="fas fa-heartbeat"></i>
+            <span>Health</span>
+        </a>
+        <a href="../financial/financial-legal-assistance.php" class="mobile-nav-item <?php echo (strpos($current_page, 'financial') !== false) ? 'active' : ''; ?>">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Finance</span>
+        </a>
+        <a href="../social/index.php" class="mobile-nav-item <?php echo (strpos($current_page, 'social') !== false) ? 'active' : ''; ?>">
+            <i class="fas fa-users"></i>
+            <span>Social</span>
+        </a>
+        <a href="../profile.php" class="mobile-nav-item <?php echo ($current_page == 'profile.php') ? 'active' : ''; ?>">
+            <i class="fas fa-user-circle"></i>
+            <span>Profile</span>
+        </a>
+    </div>
+    <!-- Mobile translation element -->
+    <div id="mobile-google-translate" style="text-align: center; padding: 5px; background-color: #f8f9fa; border-top: 1px solid #e2e8f0;"></div>
+</div>
+
+<style>
+/* Enhanced Mobile Navigation Bar Styles */
+.mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.mobile-nav-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.8rem 0;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #718096;
+    font-size: 0.8rem;
+    padding: 0.5rem 0;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-item i {
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+}
+
+.mobile-nav-item.active {
+    color: #0096ad;
+}
+
+.mobile-nav-item:hover {
+    color: #0096ad;
+    transform: translateY(-3px);
+}
+
+@media (max-width: 768px) {
+    .mobile-nav {
+        display: block;
+    }
+    
+    main {
+        padding-bottom: 90px; /* Add padding to prevent content from being hidden */
+    }
+    
+    .voice-assistant, .emergency-button {
+        bottom: 90px;
+    }
+    
+    /* Hide desktop navigation on mobile */
+    .desktop-nav {
+        display: none;
+    }
+}
+</style>
+
+<script>
+// Add scroll behavior for mobile nav
+document.addEventListener('DOMContentLoaded', function() {
+    let lastScrollTop = 0;
+    const mobileNav = document.querySelector('.mobile-nav');
+    
+    window.addEventListener('scroll', function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 300) {
+            // Scrolling down & past threshold - hide nav
+            mobileNav.style.transform = 'translateY(100%)';
+        } else {
+            // Scrolling up or at top - show nav
+            mobileNav.style.transform = 'translateY(0)';
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+
+    // Fix for links in mobile nav
+    const fixMobileLinks = () => {
+        const links = document.querySelectorAll('.mobile-nav-item');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Add loading indicator
+                this.classList.add('loading');
+            });
+        });
+    };
+    
+    fixMobileLinks();
+});
+</script>

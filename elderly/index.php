@@ -328,19 +328,19 @@ $user_role = $_SESSION['user_role'];
                     </div>
                 </div>
 
-                <!-- <div class="feature-card">
+                <div class="feature-card">
                     <div class="feature-card-header" style="background-color: #f39c12;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
                             <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-1 14H5c-.55 0-1-.45-1-1V8l8 5 8-5v9c0 .55-.45 1-1 1z"></path>
                         </svg>
-                        <h2>Daily News</h2>
+                        <h2>Financial Assitance</h2>
                     </div>
                     <div class="feature-card-content">
                         <p>Stay informed with easy-to-read daily newspapers and news articles.</p>
                         <div class="feature-actions">
-                            <a href="./daily-news.php" class="primary-action">Read News</a>
+                            <a href="./financial/" class="primary-action">view Financial Assitance </a>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
                         <!-- NEW SECTION: Daily News Headlines -->
