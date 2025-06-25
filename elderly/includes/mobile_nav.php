@@ -198,13 +198,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <span>Profile</span>
         </a>
     </div>
-    <!-- Mobile translation element -->
     <div id="mobile-google-translate" style="text-align: center; padding: 5px; background-color: #f8f9fa; border-top: 1px solid #e2e8f0;"></div>
 </div>
 
 <style>
-/* Enhanced Mobile Navigation Bar Styles */
-.mobile-nav {
+/* Enhanced Mobile Navigation Bar Styles with stronger specificity */
+body .mobile-nav {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -212,7 +211,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     background: white;
     z-index: 1000;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    display: none;
+    display: none; /* Hide by default without !important */
+    transition: transform 0.3s ease;
 }
 
 .mobile-nav-container {
@@ -246,57 +246,93 @@ $current_page = basename($_SERVER['PHP_SELF']);
     transform: translateY(-3px);
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
+    /* Show mobile elements */
     .mobile-nav {
-        display: block;
+        display: block !important;
     }
     
+    /* Hide desktop elements */
+    .ui-header-navbar {
+        display: none !important;
+    }
+    
+    /* Add padding for content */
     main {
-        padding-bottom: 90px; /* Add padding to prevent content from being hidden */
+        padding-bottom: 90px !important;
     }
     
+    /* Adjust floating buttons */
     .voice-assistant, .emergency-button {
-        bottom: 90px;
+        bottom: 90px !important;
+    }
+}
+
+@media screen and (min-width: 769px) {
+    /* Hide mobile elements */
+    .mobile-nav {
+        display: none !important;
     }
     
-    /* Hide desktop navigation on mobile */
-    .desktop-nav {
-        display: none;
+    /* Hide sidebar toggle on desktop */
+    .mobile-menu-button {
+        display: none !important;
+    }
+    
+    /* Hide amp-sidebar on desktop */
+    amp-sidebar {
+        display: none !important;
     }
 }
 </style>
 
 <script>
-// Add scroll behavior for mobile nav
 document.addEventListener('DOMContentLoaded', function() {
-    let lastScrollTop = 0;
     const mobileNav = document.querySelector('.mobile-nav');
+    const sidebar = document.querySelector('amp-sidebar');
+    let lastScrollTop = 0;
     
+    // Check viewport size
+    function isMobileView() {
+        return window.innerWidth <= 768;
+    }
+    
+    // Set initial state of navigation elements
+    function updateNavigationVisibility() {
+        if (isMobileView()) {
+            // Mobile view
+            if (mobileNav) mobileNav.style.display = 'block';
+            document.querySelectorAll('.ui-header-navbar').forEach(el => {
+                el.style.display = 'none';
+            });
+        } else {
+            // Desktop view
+            if (mobileNav) mobileNav.style.display = 'none';
+            document.querySelectorAll('.ui-header-navbar').forEach(el => {
+                el.style.display = 'flex';
+            });
+        }
+    }
+    
+    // Initial setup
+    updateNavigationVisibility();
+    
+    // Update on resize
+    window.addEventListener('resize', updateNavigationVisibility);
+    
+    // Scroll behavior for mobile nav (keep existing code)
     window.addEventListener('scroll', function() {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (!isMobileView() || !mobileNav) return;
+        
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         if (scrollTop > lastScrollTop && scrollTop > 300) {
-            // Scrolling down & past threshold - hide nav
             mobileNav.style.transform = 'translateY(100%)';
         } else {
-            // Scrolling up or at top - show nav
             mobileNav.style.transform = 'translateY(0)';
         }
         
         lastScrollTop = scrollTop;
     });
-
-    // Fix for links in mobile nav
-    const fixMobileLinks = () => {
-        const links = document.querySelectorAll('.mobile-nav-item');
-        links.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Add loading indicator
-                this.classList.add('loading');
-            });
-        });
-    };
-    
-    fixMobileLinks();
 });
 </script>

@@ -58,3 +58,6 @@
 2025-06-23 16:28:33 - Failed login attempt: rratul212025@bscse.uiu.ac.bd (Attempt: 2)
 2025-06-23 16:29:12 - Failed login attempt: rezaurrahmanratul@gmail.com (Attempt: 1)
 2025-06-23 16:29:38 - Successful login: rezaurrahmanratul@gmail.com (Role: elderly)
+2025-06-24 21:59:14 - Successful login: rezaurrahmanratul@gmail.com (Role: elderly)
+2025-06-25 01:23:42 - Successful login: rezaurrahmanratul@gmail.com (Role: healthcare_provider)
+2025-06-25 04:02:42 - Successful login: rezaurrahmanratul@gmail.com (Role: healthcare_provider)

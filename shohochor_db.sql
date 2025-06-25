@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 23, 2025 at 04:54 PM
+-- Generation Time: Jun 24, 2025 at 10:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Database: `shohochor_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `advisor_appointments`
+--
+
+CREATE TABLE `advisor_appointments` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `advisor_id` int(11) NOT NULL,
+  `appointment_date` date NOT NULL,
+  `appointment_time` time NOT NULL,
+  `duration` int(11) DEFAULT 60,
+  `meeting_type` enum('in_person','video_call','phone_call') DEFAULT 'video_call',
+  `user_message` text DEFAULT NULL,
+  `advisor_notes` text DEFAULT NULL,
+  `status` enum('pending','confirmed','completed','cancelled','rescheduled') DEFAULT 'pending',
+  `meeting_link` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -197,6 +219,43 @@ CREATE TABLE `emergency_contacts` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `financial_advisors`
+--
+
+CREATE TABLE `financial_advisors` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `specialty` varchar(100) NOT NULL,
+  `expertise` text DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `rating` decimal(3,2) DEFAULT 0.00,
+  `total_reviews` int(11) DEFAULT 0,
+  `available` tinyint(1) DEFAULT 1,
+  `hourly_rate` decimal(10,2) DEFAULT NULL,
+  `languages` text DEFAULT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `financial_advisors`
+--
+
+INSERT INTO `financial_advisors` (`id`, `name`, `specialty`, `expertise`, `email`, `phone`, `rating`, `total_reviews`, `available`, `hourly_rate`, `languages`, `profile_image`, `created_at`, `updated_at`) VALUES
+(1, 'Sarah Johnson', 'Retirement Planning', 'Specializes in helping seniors maximize retirement income and minimize taxes', 'sarah.johnson@advisor.com', '+8801712345678', 4.80, 127, 1, 2500.00, 'English,Bengali', NULL, '2025-06-23 16:21:56', '2025-06-23 16:21:56'),
+(2, 'Michael Patel', 'Estate Planning', 'Creates comprehensive estate plans including wills, trusts, and power of attorney documents', 'michael.patel@advisor.com', '+8801812345678', 4.90, 156, 1, 3000.00, 'English,Hindi,Bengali', NULL, '2025-06-23 16:21:56', '2025-06-23 16:21:56'),
+(3, 'Fatima Rahman', 'Tax Filing Assistance', 'Helps seniors identify all available deductions and credits to minimize tax liability', 'fatima.rahman@advisor.com', '+8801912345678', 4.70, 89, 1, 2000.00, 'Bengali,English', NULL, '2025-06-23 16:21:56', '2025-06-23 16:21:56'),
+(4, 'Aminul Islam', 'Government Benefits', 'Expert in Bangladesh government benefits and social security programs', 'aminul.islam@advisor.com', '+8801612345678', 4.60, 73, 0, 1800.00, 'Bengali', NULL, '2025-06-23 16:21:56', '2025-06-23 16:21:56'),
+(5, 'Sarah Johnson', 'Retirement Planning', 'Specializes in helping seniors maximize retirement income and minimize taxes', 'sarah.johnson@advisor.com', '+8801712345678', 4.80, 127, 1, 2500.00, 'English,Bengali', NULL, '2025-06-23 16:43:43', '2025-06-23 16:43:43'),
+(6, 'Michael Patel', 'Estate Planning', 'Creates comprehensive estate plans including wills, trusts, and power of attorney documents', 'michael.patel@advisor.com', '+8801812345678', 4.90, 156, 1, 3000.00, 'English,Hindi,Bengali', NULL, '2025-06-23 16:43:43', '2025-06-23 16:43:43'),
+(7, 'Fatima Rahman', 'Tax Filing Assistance', 'Helps seniors identify all available deductions and credits to minimize tax liability', 'fatima.rahman@advisor.com', '+8801912345678', 4.70, 89, 1, 2000.00, 'Bengali,English', NULL, '2025-06-23 16:43:43', '2025-06-23 16:43:43'),
+(8, 'Aminul Islam', 'Government Benefits', 'Expert in Bangladesh government benefits and social security programs', 'aminul.islam@advisor.com', '+8801612345678', 4.60, 73, 0, 1800.00, 'Bengali', NULL, '2025-06-23 16:43:43', '2025-06-23 16:43:43');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `financial_calculations`
 --
 
@@ -204,11 +263,21 @@ CREATE TABLE `financial_calculations` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `calculation_type` varchar(50) NOT NULL,
+  `calculation_name` varchar(100) DEFAULT NULL,
   `calculation_result` text NOT NULL,
+  `result_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`result_data`)),
   `calculation_inputs` text NOT NULL,
+  `input_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`input_data`)),
   `created_at` datetime NOT NULL,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `financial_calculations`
+--
+
+INSERT INTO `financial_calculations` (`id`, `user_id`, `calculation_type`, `calculation_name`, `calculation_result`, `result_data`, `calculation_inputs`, `input_data`, `created_at`, `updated_at`) VALUES
+(1, 13, 'fixed_deposit', NULL, '{\"principal\":\"1,500.00\",\"interest_rate\":\"12.00\",\"term\":5,\"maturity_amount\":\"2,643.51\",\"interest_earned\":\"1,143.51\"}', NULL, '{\"principal\":1500,\"interest_rate\":12,\"term\":5}', NULL, '2025-06-23 23:20:46', '2025-06-23 17:20:46');
 
 -- --------------------------------------------------------
 
@@ -364,6 +433,40 @@ CREATE TABLE `news_articles` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `payment_reminders`
+--
+
+CREATE TABLE `payment_reminders` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `payment_name` varchar(100) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `currency` varchar(3) DEFAULT 'BDT',
+  `due_date` date NOT NULL,
+  `payment_type` enum('utility','insurance','tax','medical','other') DEFAULT 'other',
+  `autopay_enabled` tinyint(1) DEFAULT 0,
+  `reminder_days` int(11) DEFAULT 3,
+  `status` enum('upcoming','paid','overdue','cancelled') DEFAULT 'upcoming',
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment_reminders`
+--
+
+INSERT INTO `payment_reminders` (`id`, `user_id`, `payment_name`, `amount`, `currency`, `due_date`, `payment_type`, `autopay_enabled`, `reminder_days`, `status`, `notes`, `created_at`, `updated_at`) VALUES
+(1, 6, 'Electricity Bill', 3450.00, 'BDT', '2025-06-26', 'utility', 0, 3, 'upcoming', NULL, '2025-06-23 16:21:56', '2025-06-23 16:21:56'),
+(2, 6, 'Health Insurance Premium', 6500.00, 'BDT', '2025-06-30', 'insurance', 1, 3, 'upcoming', NULL, '2025-06-23 16:21:56', '2025-06-23 16:21:56'),
+(3, 6, 'Property Tax', 28900.00, 'BDT', '2025-07-07', 'tax', 0, 3, 'upcoming', NULL, '2025-06-23 16:21:56', '2025-06-23 16:21:56'),
+(4, 6, 'Electricity Bill', 3450.00, 'BDT', '2025-06-26', 'utility', 0, 3, 'upcoming', NULL, '2025-06-23 16:43:43', '2025-06-23 16:43:43'),
+(5, 6, 'Health Insurance Premium', 6500.00, 'BDT', '2025-06-30', 'insurance', 1, 3, 'upcoming', NULL, '2025-06-23 16:43:43', '2025-06-23 16:43:43'),
+(6, 6, 'Property Tax', 28900.00, 'BDT', '2025-07-07', 'tax', 0, 3, 'upcoming', NULL, '2025-06-23 16:43:43', '2025-06-23 16:43:43');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `scheduled_calls`
 --
 
@@ -446,8 +549,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `phone`, `date_of_birth`, `gender`, `address`, `city`, `state`, `postal_code`, `country`, `profile_picture`, `profile_picture_type`, `profile_picture_name`, `bio`, `role`, `status`, `email_verified`, `verification_token`, `reset_token`, `reset_token_expiry`, `remember_token`, `remember_token_expiry`, `login_attempts`, `last_login`, `last_activity`, `created_at`, `updated_at`) VALUES
 (1, 'Admin', 'User', 'admin@shohochor.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin', 'active', 1, NULL, NULL, NULL, NULL, NULL, 0, NULL, '2025-06-14 13:32:24', '2025-06-14 07:32:24', '2025-06-17 18:47:59'),
-(6, 'Rezaur Rahman', 'Ratul', 'rezaurrahmanratul@gmail.com', '$2y$10$ryVx895e9Yo.4c23DuyugObsR7UDXtnf4k3EnjDlfi9hN5pj2/DE2', '01685337528', '2002-02-27', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'elderly', 'active', 1, '58d321542d16762024e4f63f4c9176bd', 'bad5fb064c10072f4391bc288b9bd81e9c6674da56d988382469a537ede81c71', '2025-06-17 20:00:03', NULL, NULL, 0, '2025-06-23 20:29:38', '2025-06-23 20:29:38', '2025-06-17 16:23:28', '2025-06-23 14:29:38'),
-(13, 'Rezaur Rahman Ratul', 'Ratul', 'rratul212025@bscse.uiu.ac.bd', '$2y$10$4UTOl7SiB9CRHMGyx1572.jADh.sGo6xkOaNteW9O5doAY3PnP0fu', '01685337528', '2025-06-19', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'elderly', 'active', 1, '733d0f078841520c838e083ba17907ef', NULL, NULL, NULL, NULL, 2, '2025-06-23 19:12:04', '2025-06-23 20:05:26', '2025-06-18 06:03:42', '2025-06-23 14:28:33');
+(6, 'Rezaur Rahman', 'Ratul', 'rezaurrahmanratul@gmail.com', '$2y$10$ryVx895e9Yo.4c23DuyugObsR7UDXtnf4k3EnjDlfi9hN5pj2/DE2', '01685337528', '2002-02-27', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'elderly', 'active', 1, '58d321542d16762024e4f63f4c9176bd', 'bad5fb064c10072f4391bc288b9bd81e9c6674da56d988382469a537ede81c71', '2025-06-17 20:00:03', NULL, NULL, 0, '2025-06-25 01:59:14', '2025-06-25 01:59:24', '2025-06-17 16:23:28', '2025-06-24 19:59:24'),
+(13, 'Rezaur Rahman Ratul', 'Ratul', 'rratul212025@bscse.uiu.ac.bd', '$2y$10$4UTOl7SiB9CRHMGyx1572.jADh.sGo6xkOaNteW9O5doAY3PnP0fu', '01685337528', '2025-06-19', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'elderly', 'active', 1, '733d0f078841520c838e083ba17907ef', NULL, NULL, NULL, NULL, 2, '2025-06-23 19:12:04', '2025-06-25 01:58:57', '2025-06-18 06:03:42', '2025-06-24 19:58:57');
 
 -- --------------------------------------------------------
 
@@ -519,6 +622,14 @@ CREATE TABLE `user_settings` (
 --
 
 --
+-- Indexes for table `advisor_appointments`
+--
+ALTER TABLE `advisor_appointments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `advisor_id` (`advisor_id`);
+
+--
 -- Indexes for table `appointments`
 --
 ALTER TABLE `appointments`
@@ -585,12 +696,20 @@ ALTER TABLE `emergency_contacts`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `financial_advisors`
+--
+ALTER TABLE `financial_advisors`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `financial_calculations`
 --
 ALTER TABLE `financial_calculations`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `calculation_type` (`calculation_type`);
+  ADD KEY `calculation_type` (`calculation_type`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `idx_calculation_type` (`calculation_type`);
 
 --
 -- Indexes for table `health_metrics`
@@ -650,6 +769,13 @@ ALTER TABLE `news_articles`
   ADD KEY `is_featured` (`is_featured`);
 
 --
+-- Indexes for table `payment_reminders`
+--
+ALTER TABLE `payment_reminders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `scheduled_calls`
 --
 ALTER TABLE `scheduled_calls`
@@ -691,6 +817,12 @@ ALTER TABLE `user_settings`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `advisor_appointments`
+--
+ALTER TABLE `advisor_appointments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `appointments`
@@ -741,10 +873,16 @@ ALTER TABLE `emergency_contacts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `financial_advisors`
+--
+ALTER TABLE `financial_advisors`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
 -- AUTO_INCREMENT for table `financial_calculations`
 --
 ALTER TABLE `financial_calculations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `health_metrics`
@@ -789,6 +927,12 @@ ALTER TABLE `news_articles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `payment_reminders`
+--
+ALTER TABLE `payment_reminders`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `scheduled_calls`
 --
 ALTER TABLE `scheduled_calls`
@@ -821,6 +965,13 @@ ALTER TABLE `user_settings`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `advisor_appointments`
+--
+ALTER TABLE `advisor_appointments`
+  ADD CONSTRAINT `advisor_appointments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `advisor_appointments_ibfk_2` FOREIGN KEY (`advisor_id`) REFERENCES `financial_advisors` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `appointments`
@@ -862,6 +1013,12 @@ ALTER TABLE `emergency_contacts`
   ADD CONSTRAINT `emergency_contacts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `financial_calculations`
+--
+ALTER TABLE `financial_calculations`
+  ADD CONSTRAINT `financial_calculations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `health_metrics`
 --
 ALTER TABLE `health_metrics`
@@ -891,6 +1048,12 @@ ALTER TABLE `medication_logs`
 --
 ALTER TABLE `mood_tracking`
   ADD CONSTRAINT `mood_tracking_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `payment_reminders`
+--
+ALTER TABLE `payment_reminders`
+  ADD CONSTRAINT `payment_reminders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `scheduled_calls`

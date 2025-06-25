@@ -82,7 +82,7 @@ if (empty($profile_image)) {
                 <nav class="ui-header-navbar" aria-label="Main navigation">
                     <ul class="ui-header-nav-menu">
                         <li class="nav-item">
-                            <a class="nav-link health-link" href="./health-monitoring/health-monitoring.php">
+                            <a class="nav-link health-link" href="../health-monitoring/health-monitoring.php">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                                 </svg>
@@ -91,7 +91,7 @@ if (empty($profile_image)) {
                         </li>
                       
                         <li class="nav-item">
-                            <a class="nav-link medication-link" href="./medication-tracking/medication-tracking.php">
+                            <a class="nav-link medication-link" href="../medication-tracking/medication-tracking.php">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                                     <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-2h2v2zm0-4h-2V7h2v6z"/>
                                 </svg>
@@ -99,7 +99,7 @@ if (empty($profile_image)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link social-link" href="./social_connection/social_connection.php">
+                            <a class="nav-link social-link" href="../social_connection/social_connection.php">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="9" cy="7" r="4"></circle>
@@ -110,7 +110,7 @@ if (empty($profile_image)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link assistance-link" href="./emergency_contact/emergency-contacts.php">
+                            <a class="nav-link assistance-link" href="../assistance/index.php">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                                 </svg>
