@@ -22,3 +22,5 @@
 2025-06-18 07:05:29 - OTP sent successfully to: asowdagor212010@bscse.uiu.ac.bd
 2025-06-18 08:03:25 - Attempting to send OTP to: rratul212025@bscse.uiu.ac.bd | OTP: 789448
 2025-06-18 08:03:29 - OTP sent successfully to: rratul212025@bscse.uiu.ac.bd
+2025-06-25 05:53:27 - Attempting to send OTP to: kfahim212128@bscse.uiu.ac.bd | OTP: 686291
+2025-06-25 05:53:46 - OTP sent successfully to: kfahim212128@bscse.uiu.ac.bd
