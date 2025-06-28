@@ -181,19 +181,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <i class="fas fa-home"></i>
             <span>Home</span>
         </a>
-        <a href="../health/index.php" class="mobile-nav-item <?php echo (strpos($current_page, 'health') !== false) ? 'active' : ''; ?>">
+        <a href="../../../Astha/elderly/health-monitoring/health-monitoring.php" class="mobile-nav-item <?php echo (strpos($current_page, 'health') !== false) ? 'active' : ''; ?>">
             <i class="fas fa-heartbeat"></i>
             <span>Health</span>
         </a>
-        <a href="../financial/financial-legal-assistance.php" class="mobile-nav-item <?php echo (strpos($current_page, 'financial') !== false) ? 'active' : ''; ?>">
+        <a href="../../../Astha/elderly/financial/financial-legal-assistance.php" class="mobile-nav-item <?php echo (strpos($current_page, 'financial') !== false) ? 'active' : ''; ?>">
             <i class="fas fa-money-bill-wave"></i>
             <span>Finance</span>
         </a>
-        <a href="../social/index.php" class="mobile-nav-item <?php echo (strpos($current_page, 'social') !== false) ? 'active' : ''; ?>">
+        <a href="../../../Astha/elderly/social_connection/social_connection.php" class="mobile-nav-item <?php echo (strpos($current_page, 'social') !== false) ? 'active' : ''; ?>">
             <i class="fas fa-users"></i>
             <span>Social</span>
         </a>
-        <a href="../profile.php" class="mobile-nav-item <?php echo ($current_page == 'profile.php') ? 'active' : ''; ?>">
+        <a href="../../../Astha/elderly/profile.php" class="mobile-nav-item <?php echo ($current_page == 'profile.php') ? 'active' : ''; ?>">
             <i class="fas fa-user-circle"></i>
             <span>Profile</span>
         </a>

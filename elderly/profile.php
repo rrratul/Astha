@@ -658,11 +658,10 @@ function format_date_for_input($date) {
 </head>
 <body>
     <?php include 'includes/nav.php'; ?>
-    <!-- <?php include 'includes/mobile_nav.php'; ?> -->
+    <?php include 'includes/mobile_nav.php'; ?> 
 
     <main>
         <div class="profile-container">
-            <!-- Debug Information (remove in production) -->
             <?php if (!empty($_GET['debug'])): ?>
                 <div class="debug-info">
                     <strong>Debug Information:</strong><br>

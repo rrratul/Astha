@@ -714,6 +714,22 @@ $common_medications = [
                                               placeholder="Any additional notes or observations"><?php echo $editing_prescription ? htmlspecialchars($editing_prescription['notes']) : ''; ?></textarea>
                                 </div>
                                 
+                                <div class="template-section">
+                                    <label class="form-label">Common Prescription Templates</label>
+                                    <select class="template-dropdown" id="prescriptionTemplate" onchange="loadTemplate()">
+                                        <option value="">-- Select a template --</option>
+                                        <option value="hypertension">Hypertension Management</option>
+                                        <option value="diabetes">Type 2 Diabetes</option>
+                                        <option value="uti">Urinary Tract Infection</option>
+                                        <option value="bronchitis">Acute Bronchitis</option>
+                                        <option value="gerd">GERD Treatment</option>
+                                    </select>
+                                    <div class="template-info">
+                                        <i class="fas fa-info-circle"></i> 
+                                        Templates pre-populate common prescriptions to save time
+                                    </div>
+                                </div>
+                                
                                 <div style="display: flex; gap: 15px; justify-content: flex-end;">
                                     <a href="patient-details.php?id=<?php echo $patient_id; ?>" class="btn btn-outline">Cancel</a>
                                     <button type="submit" name="<?php echo $editing_prescription ? 'update_prescription' : 'create_prescription'; ?>" class="btn btn-primary">

@@ -7,3 +7,4 @@
 2025-06-18 07:05:29 - Verification email sent to asowdagor212010@bscse.uiu.ac.bd with OTP: 241296
 2025-06-18 08:03:29 - Verification email sent to rratul212025@bscse.uiu.ac.bd with OTP: 789448
 2025-06-25 05:53:46 - Verification email sent to kfahim212128@bscse.uiu.ac.bd with OTP: 686291
+2025-06-25 08:21:19 - Verification email sent to sowdagor.aditya@gmail.com with OTP: 894787

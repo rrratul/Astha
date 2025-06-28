@@ -4,7 +4,6 @@ $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "shohochor_db";
-
 // Create connection
 try {
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -72,7 +71,7 @@ if (empty($profile_image)) {
 <header role="banner" class="ui-header">
             <div class="header-container">
                 <div class="ui-header-logo">
-                    <a role="link" aria-label="Home" href="./index.php" style="text-decoration: none;">
+                    <a role="link" aria-label="Home" href="../index.php" style="text-decoration: none;">
                         <div class="logo">
                             <span class="sho">Sho</span><span class="chor">hochor</span>
                         </div>
@@ -82,7 +81,7 @@ if (empty($profile_image)) {
                 <nav class="ui-header-navbar" aria-label="Main navigation">
                     <ul class="ui-header-nav-menu">
                         <li class="nav-item">
-                            <a class="nav-link health-link" href="../health-monitoring/health-monitoring.php">
+                            <a class="nav-link health-link" href="../../../Astha/elderly/health-monitoring/health-monitoring.php">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                                 </svg>
@@ -91,7 +90,7 @@ if (empty($profile_image)) {
                         </li>
                       
                         <li class="nav-item">
-                            <a class="nav-link medication-link" href="../medication-tracking/medication-tracking.php">
+                            <a class="nav-link medication-link" href="../../../Astha/elderly/medication-tracking/medication-tracking.php">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                                     <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-2h2v2zm0-4h-2V7h2v6z"/>
                                 </svg>
@@ -99,7 +98,7 @@ if (empty($profile_image)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link social-link" href="../social_connection/social_connection.php">
+                            <a class="nav-link social-link" href="../../../Astha/elderly/social_connection/social_connection.php">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="9" cy="7" r="4"></circle>
@@ -110,7 +109,7 @@ if (empty($profile_image)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link assistance-link" href="../assistance/index.php">
+                            <a class="nav-link assistance-link" href="../../../Astha/elderly/assistance/index.php">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                                 </svg>
@@ -150,14 +149,14 @@ if (empty($profile_image)) {
                                     </div>
                                 </div>
                                 
-                                <a href="./profile.php" role="menuitem">
+                                <a href="../profile.php" role="menuitem">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                         <circle cx="12" cy="7" r="4"></circle>
                                     </svg>
                                     My Profile
                                 </a>
-                                <a href="./settings.php" role="menuitem">
+                                <a href="../setting.php" role="menuitem">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <circle cx="12" cy="12" r="3"></circle>
                                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -174,7 +173,7 @@ if (empty($profile_image)) {
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 
-                                <a href="./logout.php" role="menuitem" class="logout-link">
+                                <a href="../../../Astha/elderly/logout.php" role="menuitem" class="logout-link">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                         <polyline points="16 17 21 12 16 7"></polyline>

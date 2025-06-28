@@ -1,5 +1,8 @@
 <?php
-session_start();
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Clear all session data
 $_SESSION = array();
@@ -18,7 +21,12 @@ if (isset($_COOKIE['remember_token'])) {
 // Destroy session
 session_destroy();
 
-// Redirect to login
-header("Location: ../login_user/login_user.php");
+// Use JavaScript redirect as fallback
+echo '<script type="text/javascript">';
+echo 'window.location.href="/Astha/index.php";';
+echo '</script>';
+echo '<noscript>';
+echo '<meta http-equiv="refresh" content="0;url=/Astha/index.php" />';
+echo '</noscript>';
 exit();
 ?>

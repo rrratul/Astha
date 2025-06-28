@@ -153,7 +153,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <a href="settings.php" class="dropdown-item">
                             <i class="fas fa-cog"></i> Settings
                         </a>
-                        <a href="./logout.php" class="dropdown-item">
+                        <a href="./includes/logout.php" class="dropdown-item">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
                     </div>

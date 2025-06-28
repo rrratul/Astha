@@ -1277,7 +1277,7 @@
     </head>
     <body>
         <?php include '../includes/nav.php'; ?>
-        <?php include '../includes/mobile_nav.php'; ?>
+<?php include '../includes/mobile_nav.php'; ?>
         
         <!-- Voice feedback dialog -->
         <div class="voice-feedback" id="voiceFeedback">
