@@ -1,0 +1,61 @@
+CREATE TABLE relatives (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    date_of_birth DATE,
+    relationship VARCHAR(50),
+    user_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE health_updates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    relative_id INT,
+    health_metric VARCHAR(255),
+    value VARCHAR(255),
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (relative_id) REFERENCES relatives(id)
+);
+
+CREATE TABLE communications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    relative_id INT,
+    type ENUM('video_call', 'message', 'appointment'),
+    details TEXT,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (relative_id) REFERENCES relatives(id)
+);
+
+CREATE TABLE financial_assistance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    relative_id INT,
+    assistance_type VARCHAR(255),
+    details TEXT,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (relative_id) REFERENCES relatives(id)
+);
+
+CREATE TABLE storytelling (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    relative_id INT,
+    story TEXT,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (relative_id) REFERENCES relatives(id)
+);
+
+CREATE TABLE community_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    description TEXT,
+    date TIMESTAMP,
+    location VARCHAR(255)
+);
+
+CREATE TABLE volunteer_opportunities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    description TEXT,
+    date TIMESTAMP,
+    location VARCHAR(255)
+);

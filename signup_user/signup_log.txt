@@ -26,3 +26,5 @@
 2025-06-25 05:53:46 - OTP sent successfully to: kfahim212128@bscse.uiu.ac.bd
 2025-06-25 08:21:13 - Attempting to send OTP to: sowdagor.aditya@gmail.com | OTP: 894787
 2025-06-25 08:21:19 - OTP sent successfully to: sowdagor.aditya@gmail.com
+2025-06-29 21:58:42 - Attempting to send OTP to: shohochor.ai@gmail.com | OTP: 816441
+2025-06-29 21:58:47 - OTP sent successfully to: shohochor.ai@gmail.com

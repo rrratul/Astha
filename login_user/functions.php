@@ -24,8 +24,8 @@ function redirectToDashboard($role) {
             }
             break;
         case 'family_member':
-            if (strpos($current_script, '/family/index.php') === false) {
-                header("Location: ../family/index.php");
+            if (strpos($current_script, '/relative/index.php') === false) {
+                header("Location: ../relative/index.php");
                 exit();
             }
             break;

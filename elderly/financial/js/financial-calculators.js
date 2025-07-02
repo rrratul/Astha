@@ -3,20 +3,54 @@
  * This file contains all the JavaScript implementations for the financial calculators
  */
 
-// Global variables for charts
+// Global variables
 let fdChart, retirementChart, deductionChart, budgetChart;
 
-// Initialize charts on document load
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
     initCharts();
-    setupAIAssistant();
+    
+    // Show welcome message
+    showToast("Welcome to Financial & Legal Assistance", "info");
 });
 
 /**
- * Initialize all charts with default data
+ * Show toast notification
+ */
+function showToast(message, type = "info") {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    // Add toast to container
+    const container = document.querySelector('.financial-container') || document.body;
+    container.appendChild(toast);
+    
+    // Show toast
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+    
+    // Hide toast after delay
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 5000);
+}
+
+/**
+ * Initialize all charts
  */
 function initCharts() {
-    // Get chart contexts
+    // Initialize chart.js context for all calculators
     const fdCtx = document.getElementById('fd-chart')?.getContext('2d');
     const retirementCtx = document.getElementById('retirement-chart')?.getContext('2d');
     const deductionCtx = document.getElementById('deduction-chart')?.getContext('2d');
@@ -207,32 +241,6 @@ function initCharts() {
 }
 
 /**
- * Generate data for retirement projection
- */
-function generateRetirementData(years, initial, returnRate, inflationRate) {
-    const realRate = (1 + returnRate / 100) / (1 + inflationRate / 100) - 1;
-    const monthlyRealRate = Math.pow(1 + realRate, 1/12) - 1;
-    const monthlyWithdrawal = 1000; // Default value
-    
-    let data = [];
-    let balance = initial;
-    
-    for (let i = 0; i < years; i++) {
-        data.push(Math.round(balance));
-        
-        for (let j = 0; j < 12; j++) {
-            balance = balance * (1 + monthlyRealRate) - monthlyWithdrawal;
-            if (balance < 0) {
-                balance = 0;
-                break;
-            }
-        }
-    }
-    
-    return data;
-}
-
-/**
  * Format number as currency (BDT)
  */
 function formatCurrency(amount) {
@@ -240,6 +248,24 @@ function formatCurrency(amount) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
+}
+
+/**
+ * Generate retirement data
+ */
+function generateRetirementData(years, initialAmount, returnRate, inflationRate) {
+    const data = [];
+    const realRate = (1 + returnRate/100) / (1 + inflationRate/100) - 1;
+    let balance = initialAmount;
+    
+    for (let i = 0; i < years; i++) {
+        data.push(Math.round(balance));
+        balance = balance * (1 + realRate);
+        // Simulate some withdrawal
+        balance -= balance * 0.04;
+    }
+    
+    return data;
 }
 
 /**
@@ -370,7 +396,7 @@ function calculateRetirement() {
             savingsDepletedMonths++;
             
             if (remainingSavings <= 0) {
-                savingsDepletedMonths = year * 12 + month;
+                remainingSavings = 0;
                 break;
             }
         }
@@ -616,15 +642,27 @@ function scrollToCalculator(calculatorId) {
  * View saved calculation
  */
 function viewCalculation(id) {
+    // Show loading state
+    document.getElementById('modal-title').innerText = "Loading...";
+    document.getElementById('modal-content').innerHTML = "<p>Loading calculation details...</p>";
+    document.getElementById('viewCalculationModal').style.display = 'block';
+    
     // Send AJAX request to get calculation details
     fetch(`view_calculation.php?id=${id}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            // Update modal title and content
-            const modalTitle = document.getElementById('modal-title');
-            const modalContent = document.getElementById('modal-content');
+            // Check for error in response
+            if (data.error) {
+                throw new Error(data.error);
+            }
             
-            modalTitle.innerText = data.name || "Saved Calculation";
+            // Update modal title
+            document.getElementById('modal-title').innerText = data.calculation_name || "Saved Calculation";
             
             // Format the content based on calculation type
             let contentHTML = '';
@@ -650,17 +688,18 @@ function viewCalculation(id) {
                         contentHTML = '<p>Details not available for this calculation type.</p>';
                 }
             } catch (e) {
-                contentHTML = '<p>Error parsing calculation data.</p>';
+                console.error("Error parsing data:", e);
+                contentHTML = '<p>Error parsing calculation data. The format may be invalid.</p>';
             }
             
-            modalContent.innerHTML = contentHTML;
-            
-            // Show modal
-            document.getElementById('viewCalculationModal').style.display = 'block';
+            // Update modal content
+            document.getElementById('modal-content').innerHTML = contentHTML;
         })
         .catch(error => {
             console.error('Error fetching calculation:', error);
-            showToast("Error loading calculation details", "error");
+            document.getElementById('modal-title').innerText = "Error";
+            document.getElementById('modal-content').innerHTML = 
+                `<p>Failed to load calculation details: ${error.message}</p>`;
         });
 }
 
@@ -672,62 +711,44 @@ function createFixedDepositHTML(result, input) {
         <div class="calculation-details">
             <div class="detail-row">
                 <span class="detail-label">Principal Amount:</span>
-                <span class="detail-value">${formatCurrency(input.principal)}</span>
+                <span class="detail-value">${result.principal || formatCurrency(input.principal)}</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Interest Rate:</span>
-                <span class="detail-value">${input.interest_rate}%</span>
+                <span class="detail-value">${result.interest_rate || input.interest_rate}%</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Time Period:</span>
-                <span class="detail-value">${input.years} Years</span>
+                <span class="detail-value">${result.term || input.years} Years</span>
             </div>
             <div class="detail-row highlight">
                 <span class="detail-label">Maturity Amount:</span>
-                <span class="detail-value">${formatCurrency(result.maturity_amount)}</span>
+                <span class="detail-value">${result.maturity_amount}</span>
             </div>
             <div class="detail-row highlight">
                 <span class="detail-label">Interest Earned:</span>
-                <span class="detail-value">${formatCurrency(result.interest_earned)}</span>
+                <span class="detail-value">${result.interest_earned}</span>
             </div>
         </div>
     `;
 }
 
 /**
- * Create HTML for Retirement calculation
+ * Create HTML for other calculation types
  */
 function createRetirementHTML(result, input) {
     return `
         <div class="calculation-details">
-            <h4>Input Parameters</h4>
-            <div class="detail-row">
-                <span class="detail-label">Current Age:</span>
-                <span class="detail-value">${input.current_age}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Retirement Age:</span>
-                <span class="detail-value">${input.retirement_age}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Life Expectancy:</span>
-                <span class="detail-value">${input.life_expectancy}</span>
-            </div>
+            <h4>Retirement Plan Summary</h4>
             <div class="detail-row">
                 <span class="detail-label">Monthly Income:</span>
-                <span class="detail-value">${formatCurrency(input.monthly_social_security + input.monthly_pension)}</span>
+                <span class="detail-value">${result.monthly_income}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Monthly Expenses:</span>
-                <span class="detail-value">${formatCurrency(input.monthly_expenses)}</span>
-            </div>
-            
-            <h4>Results</h4>
-            <div class="detail-row highlight">
                 <span class="detail-label">Monthly Balance:</span>
-                <span class="detail-value">${formatCurrency(result.monthly_balance)}</span>
+                <span class="detail-value">${result.monthly_balance}</span>
             </div>
-            <div class="detail-row highlight">
+            <div class="detail-row">
                 <span class="detail-label">Retirement Duration:</span>
                 <span class="detail-value">${result.retirement_years} years</span>
             </div>
@@ -739,82 +760,48 @@ function createRetirementHTML(result, input) {
     `;
 }
 
-/**
- * Create HTML for Medical Deduction calculation
- */
 function createMedicalDeductionHTML(result, input) {
     return `
         <div class="calculation-details">
             <div class="detail-row">
                 <span class="detail-label">Medical Expenses:</span>
-                <span class="detail-value">${formatCurrency(input.medical_expenses)}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Adjusted Gross Income (AGI):</span>
-                <span class="detail-value">${formatCurrency(input.agi)}</span>
+                <span class="detail-value">${result.total_medical_expenses}</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">AGI Threshold (7.5%):</span>
-                <span class="detail-value">${formatCurrency(result.agi_threshold)}</span>
+                <span class="detail-value">${result.agi_threshold}</span>
             </div>
             <div class="detail-row highlight">
                 <span class="detail-label">Potential Deduction:</span>
-                <span class="detail-value">${formatCurrency(result.potential_deduction)}</span>
+                <span class="detail-value">${result.potential_deduction}</span>
             </div>
             <div class="detail-row highlight">
-                <span class="detail-label">Estimated Tax Savings:</span>
-                <span class="detail-value">${formatCurrency(result.tax_savings)}</span>
+                <span class="detail-label">Tax Savings:</span>
+                <span class="detail-value">${result.tax_savings}</span>
             </div>
         </div>
     `;
 }
 
-/**
- * Create HTML for Budget calculation
- */
 function createBudgetHTML(result, input) {
-    // Calculate expense percentages
-    const totalExpenses = parseFloat(result.total_expenses.replace(/[^0-9.-]+/g, ""));
-    let expensePercentages = {};
-    
-    Object.entries(input.expenses).forEach(([category, amount]) => {
-        expensePercentages[category] = Math.round((amount / totalExpenses) * 100);
-    });
-    
     return `
         <div class="calculation-details">
-            <h4>Income Summary</h4>
+            <h4>Budget Summary</h4>
             <div class="detail-row">
-                <span class="detail-label">Total Monthly Income:</span>
-                <span class="detail-value">${formatCurrency(result.total_income)}</span>
-            </div>
-            
-            <h4>Expense Summary</h4>
-            <div class="detail-row">
-                <span class="detail-label">Total Monthly Expenses:</span>
-                <span class="detail-value">${formatCurrency(result.total_expenses)}</span>
+                <span class="detail-label">Total Income:</span>
+                <span class="detail-value">${result.total_income}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Housing (${expensePercentages.housing || 0}%):</span>
-                <span class="detail-value">${formatCurrency(input.expenses.housing)}</span>
+                <span class="detail-label">Total Expenses:</span>
+                <span class="detail-value">${result.total_expenses}</span>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Food (${expensePercentages.food || 0}%):</span>
-                <span class="detail-value">${formatCurrency(input.expenses.food)}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Healthcare (${expensePercentages.healthcare || 0}%):</span>
-                <span class="detail-value">${formatCurrency(input.expenses.healthcare)}</span>
-            </div>
-            
-            <h4>Results</h4>
             <div class="detail-row highlight">
                 <span class="detail-label">Monthly Balance:</span>
-                <span class="detail-value">${formatCurrency(result.monthly_balance)}</span>
+                <span class="detail-value">${result.monthly_balance}</span>
             </div>
             <div class="detail-row highlight">
                 <span class="detail-label">Annual Savings:</span>
-                <span class="detail-value">${formatCurrency(result.annual_savings)}</span>
+                <span class="detail-value">${result.annual_savings}</span>
             </div>
         </div>
     `;
@@ -832,36 +819,4 @@ function closeModal() {
  */
 function scheduleAdvisor(advisorId) {
     showToast("Your appointment request has been sent. You will be contacted shortly.", "success");
-}
-
-/**
- * Show toast notification
- */
-function showToast(message, type = "info") {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.innerHTML = `
-        <div class="toast-content">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    // Add toast to container
-    const container = document.querySelector('.financial-container') || document.body;
-    container.appendChild(toast);
-    
-    // Show toast
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 100);
-    
-    // Hide toast after delay
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 5000);
 }

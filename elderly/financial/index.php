@@ -71,6 +71,20 @@ if(isset($_GET['delete_calculation'])) {
     }
 }
 
+// Handle viewing saved calculation
+if(isset($_GET['view_calculation'])) {
+    $calculation_id = intval($_GET['view_calculation']);
+    
+    $stmt = $conn->prepare("SELECT * FROM financial_calculations WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $calculation_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if($row = $result->fetch_assoc()) {
+        $viewed_calculation = $row;
+    }
+}
+
 // Get saved calculations for the user
 $saved_calculations = [];
 $stmt = $conn->prepare("SELECT * FROM financial_calculations WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
@@ -134,15 +148,29 @@ function calculateRetirement($current_age, $retirement_age, $life_expectancy, $m
     $remaining_savings = $adjusted_savings;
     $monthly_real_return = pow(1 + $real_rate, 1/12) - 1;
     
-    while($remaining_savings > 0 && $savings_depleted_months < $retirement_duration * 12) {
-        $remaining_savings = $remaining_savings * (1 + $monthly_real_return) - $monthly_withdrawal;
-        $savings_depleted_months++;
+    $savings_projection = [];
+    
+    // Project savings over retirement years
+    for ($year = 0; $year <= $retirement_duration; $year++) {
+        $savings_projection[$year] = round($remaining_savings);
+        
+        for ($month = 0; $month < 12; $month++) {
+            if ($remaining_savings <= 0) break;
+            
+            $remaining_savings = $remaining_savings * (1 + $monthly_real_return) - $monthly_withdrawal;
+            $savings_depleted_months++;
+            
+            if ($remaining_savings <= 0) {
+                $savings_depleted_months = $year * 12 + $month;
+                break;
+            }
+        }
     }
     
     $savings_depleted_years = floor($savings_depleted_months / 12);
     $savings_depleted_age = $retirement_age + $savings_depleted_years;
     
-    if($remaining_savings > 0) {
+    if($remaining_savings > 0 || $monthly_withdrawal <= 0) {
         $savings_depleted_age = "Never (funds remain)";
     }
     
@@ -151,29 +179,10 @@ function calculateRetirement($current_age, $retirement_age, $life_expectancy, $m
         "monthly_balance" => number_format($monthly_balance, 2),
         "retirement_years" => $retirement_duration,
         "savings_depleted" => $savings_depleted_age,
-        "savings_projection" => calculateSavingsProjection($adjusted_savings, $monthly_balance, $real_rate, $retirement_duration)
+        "savings_projection" => $savings_projection,
+        "adjusted_savings" => number_format($adjusted_savings, 2),
+        "monthly_withdrawal" => number_format($monthly_withdrawal, 2)
     ];
-}
-
-function calculateSavingsProjection($initial_savings, $monthly_delta, $real_rate, $years) {
-    $monthly_real_return = pow(1 + $real_rate, 1/12) - 1;
-    $projection = [];
-    $savings = $initial_savings;
-    
-    for ($i = 0; $i < $years; $i++) {
-        $projection[] = max(0, round($savings));
-        
-        // Monthly changes for a year
-        for ($month = 0; $month < 12; $month++) {
-            $savings = $savings * (1 + $monthly_real_return) + $monthly_delta;
-            if($savings <= 0) {
-                $savings = 0;
-                break;
-            }
-        }
-    }
-    
-    return $projection;
 }
 
 function calculateMedicalDeduction($medical_expenses, $agi) {
@@ -186,6 +195,28 @@ function calculateMedicalDeduction($medical_expenses, $agi) {
         "agi_threshold" => number_format($threshold, 2),
         "potential_deduction" => number_format($potential_deduction, 2),
         "tax_savings" => number_format($tax_savings, 2)
+    ];
+}
+
+function calculateBudget($income_sources, $expenses) {
+    $total_income = array_sum($income_sources);
+    $total_expenses = array_sum($expenses);
+    $balance = $total_income - $total_expenses;
+    $annual_savings = $balance * 12;
+    
+    $expense_percentages = [];
+    if ($total_expenses > 0) {
+        foreach ($expenses as $category => $amount) {
+            $expense_percentages[$category] = round(($amount / $total_expenses) * 100);
+        }
+    }
+    
+    return [
+        "total_income" => number_format($total_income, 2),
+        "total_expenses" => number_format($total_expenses, 2),
+        "monthly_balance" => number_format($balance, 2),
+        "annual_savings" => number_format($annual_savings, 2),
+        "expense_percentages" => $expense_percentages
     ];
 }
 ?>
@@ -219,9 +250,11 @@ function calculateMedicalDeduction($medical_expenses, $agi) {
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../includes/style.css">
+    <link rel="stylesheet" href="css/financial-calculator.css">
     
     <!-- Additional calculator libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="./js/financial-calculators.js" defer></script>
     
     <style>
         /* Financial Assistance specific styling */
@@ -731,6 +764,185 @@ function calculateMedicalDeduction($medical_expenses, $agi) {
             cursor: pointer;
         }
         
+        /* AI Assistant specific styles */
+        .ai-modal-content {
+            max-width: 800px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ai-chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            margin-top: 1rem;
+            flex: 1;
+        }
+        
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f9f9fb;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            min-height: 300px;
+            max-height: 400px;
+        }
+        
+        .ai-message {
+            display: flex;
+            margin-bottom: 1rem;
+            align-items: flex-start;
+        }
+        
+        .ai-user-message {
+            flex-direction: row-reverse;
+        }
+        
+        .ai-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #0096ad;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .ai-user-message .ai-avatar {
+            background: #6c63ff;
+            margin-right: 0;
+            margin-left: 10px;
+        }
+        
+        .ai-bubble {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            max-width: 80%;
+            line-height: 1.5;
+        }
+        
+        .ai-user-message .ai-bubble {
+            background: #6c63ff;
+            color: white;
+        }
+        
+        .ai-thinking {
+            display: flex;
+            padding: 8px 0;
+        }
+        
+        .ai-thinking-dot {
+            width: 8px;
+            height: 8px;
+            background: #0096ad;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: thinking 1.4s infinite ease-in-out both;
+        }
+        
+        .ai-thinking-dot:nth-child(1) { animation-delay: -0.32s; }
+        .ai-thinking-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes thinking {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        .ai-input-container {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .ai-input-container textarea {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 24px;
+            font-size: 1rem;
+            resize: none;
+            height: 48px;
+            font-family: inherit;
+        }
+        
+        .ai-input-container button {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            background: #0096ad;
+            color: white;
+            border: none;
+            margin-left: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ai-input-container button:hover {
+            background: #007a8c;
+            transform: scale(1.05);
+        }
+        
+        .ai-suggestions {
+            margin-top: 0.5rem;
+        }
+        
+        .ai-suggestions p {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 0.5rem;
+        }
+        
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .suggestion-chips span {
+            padding: 6px 12px;
+            background: #f0f4f8;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-chips span:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        
+        .ai-loading {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 150, 173, 0.3);
+            border-radius: 50%;
+            border-top-color: #0096ad;
+            animation: ai-spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes ai-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-error {
+            color: #e53e3e;
+            padding: 10px;
+            border-radius: 8px;
+            background: #fff5f5;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .financial-container {
@@ -763,6 +975,14 @@ function calculateMedicalDeduction($medical_expenses, $agi) {
             
             .tools-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .ai-modal-content {
+                padding: 1rem;
+            }
+            
+            .ai-chat-container {
+                height: 300px;
             }
         }
     </style>
@@ -1327,7 +1547,7 @@ function calculateMedicalDeduction($medical_expenses, $agi) {
                                         </td>
                                         <td><?php echo date('M d, Y', strtotime($calc['created_at'])); ?></td>
                                         <td class="actions">
-                                            <button class="btn btn-view" onclick="viewCalculation(<?php echo $calc['id']; ?>, '<?php echo $calc['calculation_type']; ?>')">
+                                            <button class="btn btn-view" onclick="viewCalculation(<?php echo $calc['id']; ?>)">
                                                 <i class="fas fa-eye"></i> View
                                             </button>
                                             <a href="?delete_calculation=<?php echo $calc['id']; ?>" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this calculation?');">
@@ -1369,410 +1589,261 @@ function calculateMedicalDeduction($medical_expenses, $agi) {
                 </div>
             </div>
         </div>
+        
+        <!-- AI Assistant Modal -->
+        <div id="aiAssistantModal" class="modal">
+            <div class="modal-content ai-modal-content">
+                <span class="close-modal" onclick="closeAIModal()">&times;</span>
+                <h2><i class="fas fa-robot"></i> Financial Assistant AI</h2>
+                
+                <div class="ai-chat-container">
+                    <div id="ai-chat-messages" class="ai-chat-messages">
+                        <div class="ai-message">
+                            <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                            <div class="ai-bubble">
+                                Hello! I'm your financial assistant. I can help with questions about retirement planning, budgeting, investments, or explain your saved calculations. What would you like to know?
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-input-container">
+                        <textarea id="ai-user-input" placeholder="Type your financial question here..."></textarea>
+                        <button id="ai-send-btn" onclick="sendAIQuestion()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                    
+                    <div class="ai-suggestions">
+                        <p>Suggested questions:</p>
+                        <div class="suggestion-chips">
+                            <span onclick="useAISuggestion('How much should I save for retirement?')">How much should I save for retirement?</span>
+                            <span onclick="useAISuggestion('What tax deductions are available for seniors?')">What tax deductions are available for seniors?</span>
+                            <span onclick="useAISuggestion('Show me my saved calculations')">Show me my saved calculations</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- View Calculation Modal -->
+        <div id="viewCalculationModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeViewModal()">&times;</span>
+                <h2>Calculation Details</h2>
+                
+                <div id="view-calculation-data">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
     </main>
     
-    <!-- View Calculation Modal -->
-    <div id="viewCalculationModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <h2 id="modal-title">Calculation Details</h2>
-            <div id="modal-content"></div>
+    <!-- Footer -->
+    <footer>
+        <div class="financial-container">
+            <div class="footer-content">
+                <p>&copy; 2023 Financial & Legal Assistance. All rights reserved.</p>
+            </div>
         </div>
-    </div>
+    </footer>
     
-    <?php include '../includes/footer.php'; ?>
-    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../includes/scripts.js"></script>
     <script>
-        // Global variables
-        let fdChart, retirementChart, deductionChart, budgetChart;
-        
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize charts
-            initCharts();
+            // No need to define functions here - they're already in financial-calculators.js
             
-            // Show welcome message
-            showToast("Welcome to Financial & Legal Assistance");
+            // Optional: Add a custom welcome message
+            if (typeof showToast === 'function') {
+                showToast("Welcome to Financial & Legal Assistance", "info");
+            }
+            
+            // Add event listener for enter key in the input field
+            const aiInput = document.getElementById('ai-user-input');
+            if (aiInput) {
+                aiInput.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                        sendAIQuestion();
+                    }
+                });
+            }
         });
         
-        function showToast(message) {
-            // Implementation for showing toast notifications
-            // This could be enhanced if needed
-            alert(message);
+        /**
+         * Open the AI Assistant modal
+         */
+        function startAIAssistant() {
+            document.getElementById('aiAssistantModal').style.display = 'block';
         }
         
-        function initCharts() {
-            // Initialize chart.js context for all calculators
-            const fdCtx = document.getElementById('fd-chart').getContext('2d');
-            const retirementCtx = document.getElementById('retirement-chart').getContext('2d');
-            const deductionCtx = document.getElementById('deduction-chart').getContext('2d');
-            const budgetCtx = document.getElementById('budget-chart').getContext('2d');
-            
-            // Fixed Deposit Chart
-            fdChart = new Chart(fdCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Principal', 'Interest Earned', 'Maturity Amount'],
-                    datasets: [{
-                        label: 'Amount (৳)',
-                        data: [10000, 3382.26, 13382.26],
-                        backgroundColor: [
-                            'rgba(0, 150, 173, 0.5)',
-                            'rgba(255, 159, 64, 0.5)',
-                            'rgba(75, 192, 192, 0.5)'
-                        ],
-                        borderColor: [
-                            'rgb(0, 150, 173)',
-                            'rgb(255, 159, 64)',
-                            'rgb(75, 192, 192)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Fixed Deposit Summary'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Amount (৳)'
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Retirement Chart
-            retirementChart = new Chart(retirementCtx, {
-                type: 'line',
-                data: {
-                    labels: Array.from({length: 20}, (_, i) => i + 65),
-                    datasets: [{
-                        label: 'Remaining Savings',
-                        data: generateRandomData(20, 1500000, 2000000),
-                        borderColor: 'rgb(0, 150, 173)',
-                        backgroundColor: 'rgba(0, 150, 173, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Projected Savings Over Retirement'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Savings Amount (৳)'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Age'
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Medical Deduction Chart
-            deductionChart = new Chart(deductionCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Medical Expenses', 'AGI Threshold (7.5%)', 'Potential Deduction'],
-                    datasets: [{
-                        label: 'Amount (৳)',
-                        data: [50000, 37500, 12500],
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(255, 99, 132, 0.5)',
-                            'rgba(75, 192, 192, 0.5)'
-                        ],
-                        borderColor: [
-                            'rgb(54, 162, 235)',
-                            'rgb(255, 99, 132)',
-                            'rgb(75, 192, 192)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Medical Expense Deduction'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Amount (৳)'
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Budget Chart
-            budgetChart = new Chart(budgetCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Housing', 'Food', 'Healthcare', 'Utilities', 'Transportation', 'Leisure', 'Miscellaneous'],
-                    datasets: [{
-                        label: 'Expenses',
-                        data: [6000, 4000, 3000, 2000, 1500, 2000, 1000],
-                        backgroundColor: [
-                            'rgba(0, 150, 173, 0.7)',
-                            'rgba(255, 159, 64, 0.7)',
-                            'rgba(75, 192, 192, 0.7)',
-                            'rgba(54, 162, 235, 0.7)',
-                            'rgba(255, 99, 132, 0.7)',
-                            'rgba(153, 102, 255, 0.7)',
-                            'rgba(255, 205, 86, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgb(0, 150, 173)',
-                            'rgb(255, 159, 64)',
-                            'rgb(75, 192, 192)',
-                            'rgb(54, 162, 235)',
-                            'rgb(255, 99, 132)',
-                            'rgb(153, 102, 255)',
-                            'rgb(255, 205, 86)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                boxWidth: 10,
-                                padding: 15
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Monthly Budget Distribution'
-                        }
-                    }
-                }
-            });
+        /**
+         * Close the AI Assistant modal
+         */
+        function closeAIModal() {
+            document.getElementById('aiAssistantModal').style.display = 'none';
         }
         
-        function calculateFixedDeposit() {
-            const principal = parseFloat(document.getElementById('fd-principal').value);
-            const interestRate = parseFloat(document.getElementById('fd-interest-rate').value);
-            const years = parseInt(document.getElementById('fd-years').value);
-            
-            if(isNaN(principal) || isNaN(interestRate) || isNaN(years)) {
-                alert("Please enter valid numbers for all fields.");
-                return;
-            }
-            
-            const result = <?php echo json_encode(calculateFixedDeposit(10000, 6, 5)); ?>;
-            
-            document.getElementById('fd-result-principal').innerText = '৳' + result.principal;
-            document.getElementById('fd-result-rate').innerText = result.interest_rate + '%';
-            document.getElementById('fd-result-years').innerText = result.term + ' Years';
-            document.getElementById('fd-result-maturity').innerText = '৳' + result.maturity_amount;
-            document.getElementById('fd-result-interest').innerText = '৳' + result.interest_earned;
-            
-            // Update chart data
-            fdChart.data.datasets[0].data = [principal, interest_earned, maturity_amount];
-            fdChart.update();
-            
-            // Show results
-            document.getElementById('fd-results').style.display = 'block';
-        }
-        
-        function resetFixedDepositForm() {
-            document.getElementById('fd-principal').value = '10000';
-            document.getElementById('fd-interest-rate').value = '6';
-            document.getElementById('fd-years').value = '5';
-            
-            document.getElementById('fd-results').style.display = 'none';
-        }
-        
-        function calculateRetirement() {
-            const currentAge = parseInt(document.getElementById('retirement-current-age').value);
-            const retirementAge = parseInt(document.getElementById('retirement-age').value);
-            const lifeExpectancy = parseInt(document.getElementById('retirement-life-expectancy').value);
-            const monthlySocialSecurity = parseFloat(document.getElementById('retirement-social-security').value);
-            const monthlyPension = parseFloat(document.getElementById('retirement-pension').value);
-            const monthlyExpenses = parseFloat(document.getElementById('retirement-expenses').value);
-            const savings = parseFloat(document.getElementById('retirement-savings').value);
-            const annualInflation = parseFloat(document.getElementById('retirement-inflation').value);
-            const investmentReturn = parseFloat(document.getElementById('retirement-return').value);
-            
-            if(isNaN(currentAge) || isNaN(retirementAge) || isNaN(lifeExpectancy) || isNaN(monthlySocialSecurity) || isNaN(monthlyPension) || isNaN(monthlyExpenses) || isNaN(savings) || isNaN(annualInflation) || isNaN(investmentReturn)) {
-                alert("Please enter valid numbers for all fields.");
-                return;
-            }
-            
-            const result = <?php echo json_encode(calculateRetirement(60, 65, 85, 15000, 5000, 18000, 1500000, 5, 8)); ?>;
-            
-            document.getElementById('retirement-result-income').innerText = '৳' + result.monthly_income;
-            document.getElementById('retirement-result-balance').innerText = '৳' + result.monthly_balance;
-            document.getElementById('retirement-result-years').innerText = result.retirement_years;
-            document.getElementById('retirement-result-depleted').innerText = result.savings_depleted;
-            
-            // Update chart data
-            retirementChart.data.datasets[0].data = result.savings_projection;
-            retirementChart.update();
-            
-            // Show results
-            document.getElementById('retirement-results').style.display = 'block';
-        }
-        
-        function resetRetirementForm() {
-            document.getElementById('retirement-current-age').value = '60';
-            document.getElementById('retirement-age').value = '65';
-            document.getElementById('retirement-life-expectancy').value = '85';
-            document.getElementById('retirement-social-security').value = '15000';
-            document.getElementById('retirement-pension').value = '5000';
-            document.getElementById('retirement-expenses').value = '18000';
-            document.getElementById('retirement-savings').value = '1500000';
-            document.getElementById('retirement-inflation').value = '5';
-            document.getElementById('retirement-return').value = '8';
-            
-            document.getElementById('retirement-results').style.display = 'none';
-        }
-        
-        function calculateMedicalDeduction() {
-            const medicalExpenses = parseFloat(document.getElementById('tax-medical-expenses').value);
-            const agi = parseFloat(document.getElementById('tax-agi').value);
-            
-            if(isNaN(medicalExpenses) || isNaN(agi)) {
-                alert("Please enter valid numbers for all fields.");
-                return;
-            }
-            
-            const result = <?php echo json_encode(calculateMedicalDeduction(50000, 500000)); ?>;
-            
-            document.getElementById('deduction-result-expenses').innerText = '৳' + result.total_medical_expenses;
-            document.getElementById('deduction-result-threshold').innerText = '৳' + result.agi_threshold;
-            document.getElementById('deduction-result-deduction').innerText = '৳' + result.potential_deduction;
-            document.getElementById('deduction-result-savings').innerText = '৳' + result.tax_savings;
-            
-            // Update chart data
-            deductionChart.data.datasets[0].data = [medicalExpenses, threshold, potential_deduction];
-            deductionChart.update();
-            
-            // Show results
-            document.getElementById('medical-deduction-results').style.display = 'block';
-        }
-        
-        function resetMedicalDeductionForm() {
-            document.getElementById('tax-medical-expenses').value = '50000';
-            document.getElementById('tax-agi').value = '500000';
-            
-            document.getElementById('medical-deduction-results').style.display = 'none';
-        }
-        
-        function calculateBudget() {
-            const housing = parseFloat(document.getElementById('budget-housing').value);
-            const food = parseFloat(document.getElementById('budget-food').value);
-            const healthcare = parseFloat(document.getElementById('budget-healthcare').value);
-            const utilities = parseFloat(document.getElementById('budget-utilities').value);
-            const transport = parseFloat(document.getElementById('budget-transport').value);
-            const leisure = parseFloat(document.getElementById('budget-leisure').value);
-            const misc = parseFloat(document.getElementById('budget-misc').value);
-            
-            const totalIncome = 15000 + 5000 + 2000; // Sample total income
-            const totalExpenses = housing + food + healthcare + utilities + transport + leisure + misc;
-            const monthlyBalance = totalIncome - totalExpenses;
-            const annualSavings = monthlyBalance > 0 ? monthlyBalance * 12 : 0;
-            
-            document.getElementById('budget-result-income').innerText = '৳' + totalIncome.toFixed(2);
-            document.getElementById('budget-result-expenses').innerText = '৳' + totalExpenses.toFixed(2);
-            document.getElementById('budget-result-balance').innerText = '৳' + monthlyBalance.toFixed(2);
-            document.getElementById('budget-result-savings').innerText = '৳' + annualSavings.toFixed(2);
-            
-            // Update chart data
-            budgetChart.data.datasets[0].data = [housing, food, healthcare, utilities, transport, leisure, misc];
-            budgetChart.update();
-            
-            // Show results
-            document.getElementById('budget-results').style.display = 'block';
-        }
-        
-        function resetBudgetForm() {
-            document.getElementById('budget-pension').value = '15000';
-            document.getElementById('budget-investments').value = '5000';
-            document.getElementById('budget-other').value = '2000';
-            document.getElementById('budget-housing').value = '6000';
-            document.getElementById('budget-food').value = '4000';
-            document.getElementById('budget-healthcare').value = '3000';
-            document.getElementById('budget-utilities').value = '2000';
-            document.getElementById('budget-transport').value = '1500';
-            document.getElementById('budget-leisure').value = '2000';
-            document.getElementById('budget-misc').value = '1000';
-            
-            document.getElementById('budget-results').style.display = 'none';
-        }
-        
-        function scrollToCalculator(calculatorId) {
-            const element = document.getElementById(calculatorId);
-            if(element) {
-                element.scrollIntoView({behavior: 'smooth', block: 'start'});
-            }
-        }
-        
-        function viewCalculation(id, type) {
-            // Fetch and display calculation details in modal
-            const modalTitle = document.getElementById('modal-title');
-            const modalContent = document.getElementById('modal-content');
-            
-            modalTitle.innerText = "Calculation Details";
-            modalContent.innerHTML = "<p>Loading...</p>";
-            
-            // Simulate fetch - replace with actual AJAX call
-            setTimeout(() => {
-                modalContent.innerHTML = `
-                    <p><strong>Type:</strong> ${type}</p>
-                    <p><strong>Details:</strong> This is where the calculation details will be displayed.</p>
-                `;
-            }, 500);
-            
-            // Show modal
-            document.getElementById('viewCalculationModal').style.display = 'block';
-        }
-        
+        /**
+         * Close calculation modal
+         */
         function closeModal() {
             document.getElementById('viewCalculationModal').style.display = 'none';
         }
         
-        function scheduleAdvisor(advisorId) {
-            // Placeholder function for scheduling an advisor
-            alert("Scheduling feature is not implemented yet.");
+        /**
+         * Fill the input field with a suggested question
+         */
+        function useAISuggestion(question) {
+            document.getElementById('ai-user-input').value = question;
+            document.getElementById('ai-user-input').focus();
+        }
+        
+        /**
+         * Send user question to AI and display response
+         */
+        function sendAIQuestion() {
+            const questionInput = document.getElementById('ai-user-input');
+            const question = questionInput.value.trim();
+            
+            if (!question) return;
+            
+            // Clear input field
+            questionInput.value = '';
+            
+            // Add user message to chat
+            const chatMessages = document.getElementById('ai-chat-messages');
+            chatMessages.innerHTML += `
+                <div class="ai-message ai-user-message">
+                    <div class="ai-bubble">${escapeHtml(question)}</div>
+                    <div class="ai-avatar"><i class="fas fa-user"></i></div>
+                </div>
+            `;
+            
+            // Add thinking animation
+            const thinkingId = 'thinking-' + Date.now();
+            chatMessages.innerHTML += `
+                <div class="ai-message" id="${thinkingId}">
+                    <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="ai-thinking">
+                        <div class="ai-thinking-dot"></div>
+                        <div class="ai-thinking-dot"></div>
+                        <div class="ai-thinking-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Check if we should include saved calculations
+            const includeCalculations = question.toLowerCase().includes("calculation") || 
+                                      question.toLowerCase().includes("saved") ||
+                                      question.toLowerCase().includes("my data");
+            
+            // Prepare request
+            fetch('ajax_ai_assistant.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    question: question,
+                    include_calculations: includeCalculations
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove thinking animation
+                document.getElementById(thinkingId).remove();
+                
+                if (data.status === 'success') {
+                    // Format response with markdown
+                    const formattedResponse = formatAIResponse(data.response);
+                    
+                    // Add AI response
+                    chatMessages.innerHTML += `
+                        <div class="ai-message">
+                            <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                            <div class="ai-bubble">${formattedResponse}</div>
+                        </div>
+                    `;
+                } else {
+                    // Show error
+                    chatMessages.innerHTML += `
+                        <div class="ai-message">
+                            <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                            <div class="ai-bubble">
+                                <p>I'm sorry, but I encountered an error while processing your question.</p>
+                                <p>Please try again later or contact support if the problem persists.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
+            .catch(error => {
+                // Remove thinking animation
+                document.getElementById(thinkingId).remove();
+                
+                // Show error
+                chatMessages.innerHTML += `
+                    <div class="ai-message">
+                        <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                        <div class="ai-bubble">
+                            <p>I'm sorry, but I couldn't connect to the AI service.</p>
+                            <p>Please check your internet connection and try again.</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                console.error('Error:', error);
+            });
+        }
+        
+        /**
+         * Format AI response with markdown-like syntax
+         */
+        function formatAIResponse(text) {
+            if (!text) return '';
+            
+            // Replace newlines with <br>
+            text = text.replace(/\n/g, '<br>');
+            
+            // Bold text between **
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Italics text between *
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Numbered lists
+            text = text.replace(/(\d+\.\s.*?)(?=<br>\d+\.|$)/gs, '<li>$1</li>');
+            if (text.includes('<li>')) {
+                text = text.replace(/<li>(.*?)<\/li>/gs, '<ol>$&</ol>');
+                text = text.replace(/<ol>(<li>.*?<\/li>)<\/ol><ol>(<li>.*?<\/li>)<\/ol>/gs, '<ol>$1$2</ol>');
+            }
+            
+            // Bullet lists
+            text = text.replace(/(-\s.*?)(?=<br>-\s|$)/gs, '<li>$1</li>');
+            if (text.includes('<li>')) {
+                text = text.replace(/<li>(.*?)<\/li>/gs, '<ul>$&</ul>');
+                text = text.replace(/<ul>(<li>.*?<\/li>)<\/ul><ul>(<li>.*?<\/li>)<\/ul>/gs, '<ul>$1$2</ul>');
+            }
+            
+            return text;
+        }
+        
+        /**
+         * Escape HTML special characters
+         */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     </script>
 </body>

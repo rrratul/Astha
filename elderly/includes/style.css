@@ -1,5 +1,4 @@
-
-            * {
+* {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
@@ -759,6 +758,68 @@
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
             }
 
+            /* Notification Icon Styles */
+            .notification-icon {
+                position: relative;
+                margin-right: 20px;
+                cursor: pointer;
+            }
+
+            .notification-link {
+                color: #4a5568;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                transition: background-color 0.3s ease;
+            }
+
+            .notification-link:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            .notification-badge {
+                position: absolute;
+                top: -2px;
+                right: -2px;
+                background-color: #e53e3e;
+                color: white;
+                border-radius: 50%;
+                width: 18px;
+                height: 18px;
+                font-size: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                border: 2px solid white;
+            }
+
+            /* Mobile notification icon styles */
+            .notification-icon-mobile {
+                position: relative;
+                display: inline-block;
+            }
+
+            .notification-badge-mobile {
+                position: absolute;
+                top: -3px;
+                right: -3px;
+                background-color: #e53e3e;
+                color: white;
+                border-radius: 50%;
+                width: 14px;
+                height: 14px;
+                font-size: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                border: 1px solid white;
+            }
+
             /* Responsive Design */
             @media (max-width: 1200px) {
                 .feature-grid {
@@ -929,3 +990,64 @@
                     color: #ffcc00;
                 }
             }
+Add these styles to your CSS file
+.notification-icon {
+    position: relative;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.notification-link {
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.notification-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: #e53e3e;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 2px solid white;
+}
+
+/* Mobile notification icon styles */
+.notification-icon-mobile {
+    position: relative;
+    display: inline-block;
+}
+
+.notification-badge-mobile {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background-color: #e53e3e;
+    color: white;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 1px solid white;
+}

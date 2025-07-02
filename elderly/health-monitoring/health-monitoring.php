@@ -1,4 +1,5 @@
 <?php
+// filepath: c:\xampp\htdocs\Astha\elderly\health-monitoring\health-monitoring.php
 session_start();
 // Check if user is logged in
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
@@ -9,6 +10,70 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_name'];
 $user_role = $_SESSION['user_role'];
+
+// Include database connection
+require_once '../../signup_user/config.php';
+
+// Ensure database connection is established
+if (!isset($pdo)) {
+    try {
+        $host = 'localhost';
+        $dbname = 'shohochor_db';
+        $username = 'root';
+        $password = '';
+        
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch (PDOException $e) {
+        die("Database connection failed: " . $e->getMessage());
+    }
+}
+
+// Function to get today's medications
+function getTodayMedications($pdo, $user_id) {
+    $today = date('Y-m-d');
+    
+    $stmt = $pdo->prepare("
+        SELECT m.*, 
+               CASE 
+                   WHEN ml.status = 'taken' THEN 'taken'
+                   WHEN ml.status = 'skipped' THEN 'skipped'
+                   WHEN ml.status = 'missed' THEN 'missed'
+                   WHEN TIME(NOW()) > TIME(ml.scheduled_time) AND ml.status = 'pending' THEN 'overdue'
+                   ELSE 'pending'
+               END as current_status,
+               ml.scheduled_time,
+               ml.taken_time,
+               ml.id as log_id
+        FROM medications m
+        LEFT JOIN medication_logs ml ON m.id = ml.medication_id AND DATE(ml.scheduled_time) = ?
+        WHERE m.user_id = ? AND m.is_active = 1
+        AND (m.end_date IS NULL OR m.end_date >= ?)
+        ORDER BY ml.scheduled_time ASC
+    ");
+    
+    $stmt->execute([$today, $user_id, $today]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Get today's medications
+$todayMedications = getTodayMedications($pdo, $user_id);
+
+// Format time for display
+function formatMedicationTime($timeString) {
+    $time = new DateTime($timeString);
+    $hour = $time->format('G'); // 24-hour format without leading zeros
+    
+    if($hour < 12) {
+        return "Morning - " . $time->format('g:i A');
+    } else if($hour < 17) {
+        return "Afternoon - " . $time->format('g:i A');
+    } else if($hour < 21) {
+        return "Evening - " . $time->format('g:i A');
+    } else {
+        return "Night - " . $time->format('g:i A');
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -1176,7 +1241,7 @@ $user_role = $_SESSION['user_role'];
                 </div>
             </div>
             
-            <!-- Today's Medication -->
+            <!-- Today's Medication - UPDATED to use database data -->
             <div class="health-section">
                 <h2 class="health-section-title">
                     <i class="fas fa-pills"></i>
@@ -1184,67 +1249,50 @@ $user_role = $_SESSION['user_role'];
                 </h2>
                 
                 <ul class="medication-list">
-                    <li class="medication-item">
-                        <div class="medication-info">
-                            <div class="medication-name">Lisinopril 10mg</div>
-                            <div class="medication-details">Blood Pressure - 1 tablet</div>
-                            <div class="medication-time">
-                                <i class="far fa-clock"></i>
-                                Morning - 8:00 AM
+                    <?php if(empty($todayMedications)): ?>
+                        <li class="medication-item" style="text-align: center; padding: 20px;">
+                            <div class="medication-info">
+                                <div class="medication-name">No medications scheduled for today</div>
                             </div>
-                        </div>
-                        <div class="medication-status">
-                            <span class="status-pill status-taken">✓ Taken</span>
-                        </div>
-                    </li>
-                    
-                    <li class="medication-item">
-                        <div class="medication-info">
-                            <div class="medication-name">Metformin 500mg</div>
-                            <div class="medication-details">Diabetes - 1 tablet</div>
-                            <div class="medication-time">
-                                <i class="far fa-clock"></i>
-                                Afternoon - 2:00 PM
-                            </div>
-                        </div>
-                        <div class="medication-status">
-                            <span class="status-pill status-due">Due Now</span>
-                        </div>
-                    </li>
-                    
-                    <li class="medication-item">
-                        <div class="medication-info">
-                            <div class="medication-name">Atorvastatin 20mg</div>
-                            <div class="medication-details">Cholesterol - 1 tablet</div>
-                            <div class="medication-time">
-                                <i class="far fa-clock"></i>
-                                Evening - 8:00 PM
-                            </div>
-                        </div>
-                        <div class="medication-status">
-                            <span class="status-pill status-upcoming">Upcoming</span>
-                        </div>
-                    </li>
-                    
-                    <li class="medication-item">
-                        <div class="medication-info">
-                            <div class="medication-name">Vitamin D3 1000 IU</div>
-                            <div class="medication-details">Supplement - 1 tablet</div>
-                            <div class="medication-time">
-                                <i class="far fa-clock"></i>
-                                Morning - 8:00 AM
-                            </div>
-                        </div>
-                        <div class="medication-status">
-                            <span class="status-pill status-taken">✓ Taken</span>
-                        </div>
-                    </li>
+                        </li>
+                    <?php else: ?>
+                        <?php foreach($todayMedications as $medication): ?>
+                            <li class="medication-item">
+                                <div class="medication-info">
+                                    <div class="medication-name"><?php echo htmlspecialchars($medication['name'] . ' ' . $medication['dosage']); ?></div>
+                                    <div class="medication-details"><?php echo htmlspecialchars($medication['frequency'] . ' - ' . ($medication['instructions'] ? $medication['instructions'] : '1 tablet')); ?></div>
+                                    <div class="medication-time">
+                                        <i class="far fa-clock"></i>
+                                        <?php echo formatMedicationTime($medication['scheduled_time']); ?>
+                                    </div>
+                                </div>
+                                <div class="medication-status">
+                                    <?php if($medication['current_status'] === 'taken'): ?>
+                                        <span class="status-pill status-taken">✓ Taken</span>
+                                    <?php elseif($medication['current_status'] === 'overdue'): ?>
+                                        <span class="status-pill status-due">Overdue</span>
+                                    <?php elseif($medication['current_status'] === 'pending' && strtotime($medication['scheduled_time']) <= time()): ?>
+                                        <span class="status-pill status-due">Due Now</span>
+                                    <?php else: ?>
+                                        <span class="status-pill status-upcoming">Upcoming</span>
+                                    <?php endif; ?>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </ul>
                 
-                <button class="health-action-btn">
-                    <i class="fas fa-check-circle"></i>
-                    Mark Medication as Taken
-                </button>
+                <?php if(!empty($todayMedications)): ?>
+                    <button class="health-action-btn" onclick="showMedicationOptions()">
+                        <i class="fas fa-check-circle"></i>
+                        Mark Medication as Taken
+                    </button>
+                <?php else: ?>
+                    <button class="health-action-btn" onclick="location.href='../medication-tracking/medication-tracking.php';">
+                        <i class="fas fa-pills"></i>
+                        Go to Medication Tracking
+                    </button>
+                <?php endif; ?>
             </div>
             
             <!-- Upcoming Appointments -->
@@ -1498,26 +1546,83 @@ $user_role = $_SESSION['user_role'];
             // Process voice commands with improved pattern matching
             function processVoiceCommand(command) {
                 console.log("Processing command:", command);
+                let matchFound = false;
                 
-                // Appointment related commands - improved pattern matching
-                if (command.includes('appointment') || command.includes('doctor') || 
-                   (command.includes('when') && (command.includes('next') || command.includes('my')))) {
-                    voiceResult.textContent = 'Showing your upcoming appointments';
-                    speakResponse("Here are your upcoming appointments");
+                // Navigation commands to other pages
+                if (command.includes('home') || command.includes('dashboard')) {
+                    matchFound = true;
+                    voiceResult.textContent = 'Navigating to home page';
+                    speakResponse("Taking you to the home page");
                     
-                    // Wait for speech to complete before scrolling
-                    setTimeout(() => {
-                        const appointmentSection = document.querySelector('.health-section:nth-of-type(2)');
-                        if (appointmentSection) {
-                            safeScrollTo(appointmentSection);
-                            highlightElement(appointmentSection);
-                        }
-                    }, 500);
+                    setTimeout(function() {
+                        window.location.href = '../index.php';
+                    }, 1500);
                     return;
                 }
                 
-                // Blood pressure related commands
+                if (command.includes('medication') || command.includes('medicine') || command.includes('pill')) {
+                    if (command.includes('tracking') || command.includes('page') || command.includes('go to')) {
+                        matchFound = true;
+                        voiceResult.textContent = 'Navigating to medication tracking';
+                        speakResponse("Taking you to medication tracking");
+                        
+                        setTimeout(function() {
+                            window.location.href = '../medication-tracking/medication-tracking.php';
+                        }, 1500);
+                        return;
+                    } else {
+                        // Show medication section on current page
+                        matchFound = true;
+                        voiceResult.textContent = 'Showing your medication information';
+                        speakResponse("Here is your medication schedule for today");
+                        
+                        setTimeout(() => {
+                            const medSection = document.querySelector('.health-section:nth-of-type(1)');
+                            if (medSection) {
+                                safeScrollTo(medSection);
+                                highlightElement(medSection);
+                            }
+                        }, 500);
+                        return;
+                    }
+                }
+                
+                if (command.includes('social') || command.includes('connect') || command.includes('friend')) {
+                    matchFound = true;
+                    voiceResult.textContent = 'Navigating to social connection';
+                    speakResponse("Taking you to social connection page");
+                    
+                    setTimeout(function() {
+                        window.location.href = '../social_connection/social_connection.php';
+                    }, 1500);
+                    return;
+                }
+                
+                if (command.includes('news') || command.includes('headlines')) {
+                    matchFound = true;
+                    voiceResult.textContent = 'Navigating to daily news';
+                    speakResponse("Taking you to daily news page");
+                    
+                    setTimeout(function() {
+                        window.location.href = '../daily-news-app/daily-news.php';
+                    }, 1500);
+                    return;
+                }
+                
+                if (command.includes('emergency') || command.includes('contact')) {
+                    matchFound = true;
+                    voiceResult.textContent = 'Navigating to emergency contacts';
+                    speakResponse("Taking you to emergency contacts");
+                    
+                    setTimeout(function() {
+                        window.location.href = '../emergency-contacts.php';
+                    }, 1500);
+                    return;
+                }
+                
+                // Handle health monitoring specific commands for this page
                 if (command.includes('blood pressure') || command.includes('bp')) {
+                    matchFound = true;
                     voiceResult.textContent = 'Showing blood pressure readings';
                     speakResponse("Your blood pressure is 120 over 80, which is normal");
                     
@@ -1531,8 +1636,8 @@ $user_role = $_SESSION['user_role'];
                     return;
                 }
                 
-                // Heart rate commands
                 if (command.includes('heart rate') || command.includes('pulse')) {
+                    matchFound = true;
                     voiceResult.textContent = 'Showing heart rate information';
                     speakResponse("Your heart rate is 72 beats per minute, which is normal");
                     
@@ -1546,8 +1651,8 @@ $user_role = $_SESSION['user_role'];
                     return;
                 }
                 
-                // Blood sugar commands
                 if (command.includes('blood sugar') || command.includes('glucose')) {
+                    matchFound = true;
                     voiceResult.textContent = 'Showing blood sugar readings';
                     speakResponse("Your blood sugar is 110 milligrams per deciliter. This is slightly elevated and should be monitored.");
                     
@@ -1561,8 +1666,8 @@ $user_role = $_SESSION['user_role'];
                     return;
                 }
                 
-                // Oxygen level commands
                 if (command.includes('oxygen') || command.includes('o2')) {
+                    matchFound = true;
                     voiceResult.textContent = 'Showing oxygen levels';
                     speakResponse("Your oxygen level is 98 percent, which is normal");
                     
@@ -1576,16 +1681,17 @@ $user_role = $_SESSION['user_role'];
                     return;
                 }
                 
-                // Medication related commands
-                if (command.includes('medicine') || command.includes('medication') || command.includes('pill')) {
-                    voiceResult.textContent = 'Showing your medication information';
-                    speakResponse("Here is your medication schedule for today");
+                if (command.includes('appointment') || command.includes('doctor') || 
+                   (command.includes('when') && (command.includes('next') || command.includes('my')))) {
+                    matchFound = true;
+                    voiceResult.textContent = 'Showing your upcoming appointments';
+                    speakResponse("Here are your upcoming appointments");
                     
                     setTimeout(() => {
-                        const medSection = document.querySelector('.health-section:nth-of-type(1)');
-                        if (medSection) {
-                            safeScrollTo(medSection);
-                            highlightElement(medSection);
+                        const appointmentSection = document.querySelector('.health-section:nth-of-type(2)');
+                        if (appointmentSection) {
+                            safeScrollTo(appointmentSection);
+                            highlightElement(appointmentSection);
                         }
                     }, 500);
                     return;
@@ -1593,6 +1699,7 @@ $user_role = $_SESSION['user_role'];
                 
                 // Health tips commands
                 if (command.includes('tip') || command.includes('advice')) {
+                    matchFound = true;
                     voiceResult.textContent = 'Showing health tips for you';
                     speakResponse("Here are some health tips that might be helpful for you");
                     
@@ -1606,578 +1713,485 @@ $user_role = $_SESSION['user_role'];
                     return;
                 }
                 
-                // Emergency commands
-                if (command.includes('emergency') || command.includes('help') || command.includes('sos')) {
-                    voiceResult.textContent = 'Activating emergency assistance';
-                    speakResponse("Initiating emergency protocol. Help is on the way.");
-                    
-                    setTimeout(() => {
-                        document.querySelector('.emergency-button').click();
-                    }, 1000);
-                    return;
-                }
-                
-                // Read page commands
-                if (command.includes('read') || command.includes('speak')) {
-                    voiceResult.textContent = 'Reading page content';
-                    readPageContent();
-                    return;
-                }
-                
-                // Increase text size commands
+                // Accessibility commands
                 if (command.includes('bigger') || command.includes('larger') || (command.includes('increase') && command.includes('size'))) {
+                    matchFound = true;
                     voiceResult.textContent = 'Making text bigger';
                     speakResponse("Increasing text size for better visibility");
                     increaseFontSize();
                     return;
                 }
                 
-                // Decrease text size commands
                 if (command.includes('smaller') || (command.includes('decrease') && command.includes('size'))) {
+                    matchFound = true;
                     voiceResult.textContent = 'Making text smaller';
                     speakResponse("Decreasing text size");
                     decreaseFontSize();
                     return;
                 }
                 
-                // High contrast commands
                 if (command.includes('contrast')) {
+                    matchFound = true;
                     voiceResult.textContent = 'Toggling high contrast mode';
                     speakResponse("Changing to high contrast mode for better visibility");
                     toggleHighContrast();
                     return;
                 }
                 
-                // Go home command
-                if (command.includes('home')) {
-                    voiceResult.textContent = 'Going to home page';
-                    speakResponse("Taking you to the home page");
-                    
-                    setTimeout(function() {
-                        window.location.href = '../older_people.php';
-                    }, 1500);
+                if (command.includes('read') || command.includes('speak')) {
+                    matchFound = true;
+                    voiceResult.textContent = 'Reading page content';
+                    readPageContent();
                     return;
                 }
                 
-                // Show dashboard or overview command
-                if (command.includes('dashboard') || command.includes('overview') || command.includes('summary')) {
-                    voiceResult.textContent = 'Showing your health dashboard';
-                    speakResponse("Here is your health dashboard summary");
-                    
-                    setTimeout(() => {
-                        const dashboard = document.querySelector('.health-dashboard');
-                        if (dashboard) {
-                            safeScrollTo(dashboard);
-                            highlightElement(dashboard);
-                        }
-                    }, 500);
-                    return;
-                }
-                
-                // Unknown command
-                voiceResult.textContent = "Sorry, I didn't understand that command.";
-                speakResponse("I didn't understand. You can say things like 'check my blood pressure', 'show my medications', or 'when is my next appointment'.");
-            }
-            
-            // Safe scrolling function to prevent page navigation issues
-            function safeScrollTo(element) {
-                if (!element) return;
-                
-                try {
-                    // Check if element is in DOM
-                    if (!document.body.contains(element)) {
-                        console.error("Element not in DOM");
-                        return;
-                    }
-                    
-                    // First method: Use scrollIntoView with options
-                    element.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center',
-                        inline: 'nearest'
-                    });
-                } catch (error) {
-                    console.error("Error during scroll:", error);
-                    
-                    // Fallback method: Use simpler scrollIntoView
-                    try {
-                        element.scrollIntoView(true);
-                    } catch (e) {
-                        console.error("Even simple scrolling failed:", e);
-                        
-                        // Last resort: Scroll to element's position
-                        try {
-                            const rect = element.getBoundingClientRect();
-                            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                            const targetY = rect.top + scrollTop - 100; // 100px above element
-                            
-                            window.scrollTo({
-                                top: targetY,
-                                behavior: 'smooth'
-                            });
-                        } catch (finalError) {
-                            console.error("All scroll methods failed:", finalError);
-                        }
-                    }
+                // If no match found
+                if (!matchFound) {
+                    playSound('commandNotRecognizedSound');
+                    voiceResult.textContent = "Sorry, I didn't understand that command.";
+                    speakResponse("I didn't understand. You can say things like 'check my blood pressure', 'show my medications', or 'go to social connection'.");
                 }
             }
-            
-            // Improved highlight element function with better visual feedback
-            function highlightElement(element) {
-                if (!element) return;
-                
-                // Create overlay for better visibility
-                const overlay = document.createElement('div');
-                overlay.style.position = 'absolute';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100%';
-                overlay.style.height = '100%';
-                overlay.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
-                overlay.style.border = '3px solid #ffcc00';
-                overlay.style.borderRadius = '8px';
-                overlay.style.pointerEvents = 'none';
-                overlay.style.zIndex = '10';
-                overlay.style.boxShadow = '0 0 15px #ffcc00';
-                overlay.classList.add('highlight-overlay');
-                
-                // Position the element properly
-                element.style.position = element.style.position || 'relative';
-                
-                // Remove any existing overlays
-                const existingOverlays = element.querySelectorAll('.highlight-overlay');
-                existingOverlays.forEach(existing => existing.remove());
-                
-                // Add the new overlay
-                element.appendChild(overlay);
-                
-                // Save original styles
-                const originalBackground = element.style.backgroundColor;
-                
-                // Apply pulse animation
-                element.style.animation = 'pulse-highlight 2s ease-in-out';
-                
-                // Create a CSS rule for the animation if it doesn't exist
-                if (!document.getElementById('highlight-animation')) {
-                    const style = document.createElement('style');
-                    style.id = 'highlight-animation';
-                    style.textContent = `
-                        @keyframes pulse-highlight {
-                            0%, 100% { background-color: ${originalBackground || 'transparent'}; }
-                            50% { background-color: rgba(255, 204, 0, 0.2); }
-                        }
-                    `;
-                    document.head.appendChild(style);
-                }
-                
-                // Remove overlay after delay
-                setTimeout(function() {
-                    if (overlay && overlay.parentElement) {
-                        overlay.remove();
-                        element.style.animation = '';
-                    }
-                }, 3000);
-            }
-            
-            // Improved speech response function with better handling
-            function speakResponse(text) {
-                if ('speechSynthesis' in window) {
-                    // Cancel any ongoing speech first
-                    window.speechSynthesis.cancel();
-                    
-                    // Small delay to ensure cancellation completed
-                    setTimeout(() => {
-                        const utterance = new SpeechSynthesisUtterance(text);
-                        utterance.rate = 0.9;  // Slightly slower for elderly users
-                        utterance.pitch = 1;
-                        utterance.volume = 1;
-                        
-                        // Get available voices and try to select a good one
-                        let voices = window.speechSynthesis.getVoices();
-                        if (voices.length > 0) {
-                            // Try to find a natural-sounding English voice
-                            const preferredVoice = voices.find(voice => 
-                                voice.name.includes('Google') && voice.name.includes('English')) ||
-                                voices.find(voice => voice.lang.includes('en-') && voice.name.includes('Female')) ||
-                                voices[0];
-                                
-                            if (preferredVoice) {
-                                utterance.voice = preferredVoice;
-                            }
-                        }
-                        
-                        // Handle speech end event
-                        utterance.onend = function(event) {
-                            console.log('Speech complete');
-                        };
-                        
-                        // Handle speech error event
-                        utterance.onerror = function(event) {
-                            console.error('Speech error:', event.error);
-                        };
-                        
-                        // Speak the response
-                        window.speechSynthesis.speak(utterance);
-                    }, 100);
-                }
-            }
-            
-            // Voice Assistant button click handler with better UX
-            voiceAssistantBtn.addEventListener('click', function() {
-                if (recognitionActive) {
-                    // Stop if already listening
-                    if (recognition) {
-                        recognition.stop();
-                        showToast("Voice assistant stopped");
-                    }
-                    return;
-                }
-                
-                // First time initialization
-                if (!recognition && !initSpeechRecognition()) {
-                    showToast("Voice recognition not available");
-                    return; // Exit if initialization failed
-                }
-                
-                // Show available commands
-                speakResponse("Hello, I'm listening. You can ask about your blood pressure, medications, appointments, or say help for assistance.");
-                
-                // Start listening after a brief delay to allow the speech to be heard
-                setTimeout(function() {
-                    try {
-                        recognition.start();
-                    } catch (e) {
-                        console.error("Speech recognition error:", e);
-                        // If recognition is already started, stop and restart
-                        recognition.stop();
-                        setTimeout(function() {
-                            recognition.start();
-                        }, 300);
-                    }
-                }, 1500);
-            });
 
-            // Emergency button functionality
-            document.querySelector('.emergency-button').addEventListener('click', function() {
-                if (confirm("Do you need emergency medical assistance? Press OK to call for help.")) {
-                    alert("Emergency alert sent! Help is on the way. If this is a medical emergency, call 999 immediately.");
-                }
-            });
+    // Fix the highlightElement function
+    function highlightElement(element) {
+        if (!element) return;
+        
+        // Create overlay for better visibility
+        const overlay = document.createElement('div');
+        overlay.style.position = 'absolute';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
+        overlay.style.borderRadius = 'inherit';
+        overlay.style.pointerEvents = 'none'; // Allow clicks to pass through
+        overlay.style.zIndex = '1';
+        
+        // Check if element has position style
+        const position = window.getComputedStyle(element).position;
+        if (position === 'static') {
+            element.style.position = 'relative';
+        }
+        
+        // Add the overlay to the element
+        element.appendChild(overlay);
+        
+        // Pulse animation
+        element.classList.add('pulse-animation');
+        
+        // Remove after animation
+        setTimeout(() => {
+            if (element.contains(overlay)) {
+                element.removeChild(overlay);
+            }
+            element.classList.remove('pulse-animation');
+        }, 3000);
+    }
+    
+    // Add the missing speakResponse function
+    function speakResponse(text) {
+        if ('speechSynthesis' in window) {
+            // Play the recognized sound
+            playSound('commandRecognizedSound');
             
-            // Add page load animation
-            document.addEventListener('DOMContentLoaded', function() {
-                document.querySelectorAll('.metric-card, .health-section').forEach(function(element, index) {
-                    setTimeout(function() {
-                        element.style.opacity = '1';
-                        element.style.transform = 'translateY(0)';
-                    }, 100 * index);
-                });
-                
-                // Make sure voices are loaded
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.getVoices();
-                }
-                
-                // Add event listeners to filter buttons for better interaction
-                document.querySelectorAll('.chart-filter-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        // Remove active class from all buttons
-                        document.querySelectorAll('.chart-filter-btn').forEach(btn => {
-                            btn.classList.remove('active');
-                        });
-                        // Add active class to clicked button
-                        this.classList.add('active');
-                        
-                        // In a real application, we would update the chart data here
-                        let period = this.textContent.toLowerCase();
-                        let newData = getHealthData(period);
-                        updateChart(bpChart, newData);
-                    });
-                });
-                
-                // Make sure voice support is properly initialized
-                if ('webkitSpeechRecognition' in window) {
-                    console.log("Voice recognition supported");
-                } else {
-                    console.warn("Voice recognition not supported in this browser");
-                }
-            });
+            // Cancel any ongoing speech first
+            window.speechSynthesis.cancel();
             
-            // Make sure the speech recognition voices are loaded
-            if ('speechSynthesis' in window) {
+            // Small delay to ensure cancellation completed
+            setTimeout(() => {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;  // Slightly slower for elderly users
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                
+                // Get available voices and try to select a good one
                 let voices = window.speechSynthesis.getVoices();
-                if (voices.length === 0) {
-                    window.speechSynthesis.onvoiceschanged = function() {
-                        voices = window.speechSynthesis.getVoices();
-                        console.log("Voices loaded:", voices.length);
-                    };
-                }
-            }
-            
-            // Initialize Blood Pressure Chart
-            const bpCtx = document.getElementById('bpChart').getContext('2d');
-            const bpChart = new Chart(bpCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [
-                        {
-                            label: 'Systolic',
-                            data: [122, 119, 125, 120, 118, 122, 120],
-                            borderColor: '#0096ad',
-                            backgroundColor: 'rgba(0, 150, 173, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true
-                        },
-                        {
-                            label: 'Diastolic',
-                            data: [82, 80, 83, 81, 79, 80, 80],
-                            borderColor: '#38b2ac',
-                            backgroundColor: 'rgba(56, 178, 172, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(45, 55, 72, 0.9)',
-                            titleFont: {
-                                size: 16,
-                                family: "'Montserrat', sans-serif"
-                            },
-                            bodyFont: {
-                                size: 14,
-                                family: "'Open Sans', sans-serif"
-                            },
-                            padding: 15,
-                            cornerRadius: 8
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 50,
-                            max: 160,
-                            ticks: {
-                                stepSize: 20
-                            }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
+                if (voices.length > 0) {
+                    // Try to find a natural-sounding English voice
+                    const preferredVoice = voices.find(voice => 
+                        voice.name.includes('Google') && voice.name.includes('English')) ||
+                        voices.find(voice => voice.lang.includes('en-') && voice.name.includes('Female')) ||
+                        voices[0];
+                        
+                    if (preferredVoice) {
+                        utterance.voice = preferredVoice;
                     }
                 }
-            });
-            
-            // Simulated function to get health data for different periods
-            function getHealthData(period) {
-                // In a real app, this would fetch data from an API
-                if (period === 'day') {
-                    return {
-                        labels: ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM'],
-                        systolic: [118, 120, 122, 119, 121, 119],
-                        diastolic: [78, 80, 82, 79, 81, 79]
-                    };
-                } else if (period === 'week') {
-                    return {
-                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        systolic: [122, 119, 125, 120, 118, 122, 120],
-                        diastolic: [82, 80, 83, 81, 79, 80, 80]
-                    };
-                } else if (period === 'month') {
-                    return {
-                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                        systolic: [121, 123, 120, 119],
-                        diastolic: [81, 82, 79, 80]
-                    };
-                } else { // 3 months
-                    return {
-                        labels: ['Jan', 'Feb', 'Mar'],
-                        systolic: [122, 120, 121],
-                        diastolic: [81, 80, 80]
-                    };
-                }
-            }
-            
-            // Function to update chart with new data
-            function updateChart(chart, data) {
-                chart.data.labels = data.labels;
-                chart.data.datasets[0].data = data.systolic;
-                chart.data.datasets[1].data = data.diastolic;
-                chart.update();
-            }
-            
-            // Enhanced Accessibility Functions
-            let currentFontSize = 100; // percentage
-            let highContrastMode = false;
-            
-            function increaseFontSize() {
-                if (currentFontSize < 150) {
-                    currentFontSize += 10;
-                    document.body.style.fontSize = currentFontSize + '%';
-                    showToast("Text size increased");
-                } else {
-                    showToast("Maximum text size reached");
-                }
-            }
-            
-            function decreaseFontSize() {
-                if (currentFontSize > 90) {
-                    currentFontSize -= 10;
-                    document.body.style.fontSize = currentFontSize + '%';
-                    showToast("Text size decreased");
-                } else {
-                    showToast("Minimum text size reached");
-                }
-            }
-            
-            function toggleHighContrast() {
-                highContrastMode = !highContrastMode;
                 
-                if (highContrastMode) {
-                    document.body.classList.add('high-contrast');
-                    document.body.style.backgroundColor = "#000";
-                    document.body.style.color = "#FFF";
-                    
-                    document.querySelectorAll('.metric-card, .health-chart-container, .health-section').forEach(function(element) {
-                        element.style.backgroundColor = "#000";
-                        element.style.color = "#FFF";
-                        element.style.border = "1px solid #FFF";
-                    });
-                    
-                    // Keep accessibility buttons visible in high contrast mode
-                    document.querySelectorAll('.accessibility-controls button').forEach(function(button) {
-                        button.style.backgroundColor = "#333";
-                        button.style.borderColor = "#FFF";
-                    });
-                    
-                    showToast("High contrast mode enabled");
-                } else {
-                    document.body.classList.remove('high-contrast');
-                    document.body.style.backgroundColor = "";
-                    document.body.style.color = "";
-                    
-                    document.querySelectorAll('.metric-card, .health-chart-container, .health-section').forEach(function(element) {
-                        element.style.backgroundColor = "";
-                        element.style.color = "";
-                        element.style.border = "";
-                    });
-                    
-                    // Reset accessibility buttons
-                    document.querySelectorAll('.accessibility-controls button').forEach(function(button) {
-                        button.style.backgroundColor = "";
-                        button.style.borderColor = "";
-                    });
-                    
-                    showToast("High contrast mode disabled");
-                }
-            }
+                // Speak the response
+                window.speechSynthesis.speak(utterance);
+            }, 100);
+        }
+    }
+    
+    // Add the playSound function
+    function playSound(soundId) {
+        const sound = document.getElementById(soundId);
+        if (sound) {
+            // Reset to beginning if already playing
+            sound.pause();
+            sound.currentTime = 0;
             
-            function readPageContent() {
-                if ('speechSynthesis' in window) {
-                    var mainContent = document.querySelector('main').innerText;
-                    var cleanedContent = mainContent.replace(/\s+/g, ' ').trim();
-                    
-                    // Truncate if too long to avoid speech issues
-                    const maxLength = 5000;
-                    if (cleanedContent.length > maxLength) {
-                        cleanedContent = cleanedContent.substring(0, maxLength) + 
-                            "... The content is too long to read completely. Please use more specific voice commands.";
-                    }
-                    
-                    var utterance = new SpeechSynthesisUtterance(cleanedContent);
-                    utterance.rate = 0.9; // Slightly slower for elderly users
-                    utterance.pitch = 1;
-                    
-                    window.speechSynthesis.cancel();
-                    window.speechSynthesis.speak(utterance);
-                    showToast("Reading page content...");
-                    
-                    createStopReadingButton();
-                } else {
-                    alert("Text-to-speech is not supported in your browser.");
-                }
-            }
+            // Play the sound with error handling
+            const playPromise = sound.play();
             
-            function createStopReadingButton() {
-                var existingButton = document.getElementById('stopReadingButton');
-                if (existingButton) {
-                    existingButton.remove();
-                }
-                
-                var stopButton = document.createElement('button');
-                stopButton.id = 'stopReadingButton';
-                stopButton.innerText = 'Stop Reading';
-                stopButton.style.position = 'fixed';
-                stopButton.style.bottom = '180px';
-                stopButton.style.left = '50%';
-                stopButton.style.transform = 'translateX(-50%)';
-                stopButton.style.zIndex = '1000';
-                stopButton.style.padding = '10px 20px';
-                stopButton.style.backgroundColor = '#e74c3c';
-                stopButton.style.color = 'white';
-                stopButton.style.border = 'none';
-                stopButton.style.borderRadius = '30px';
-                stopButton.style.fontSize = '18px';
-                stopButton.style.cursor = 'pointer';
-                stopButton.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-                
-                stopButton.onclick = function() {
-                    window.speechSynthesis.cancel();
-                    stopButton.remove();
-                    showToast("Reading stopped");
-                };
-                
-                document.body.appendChild(stopButton);
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.error("Sound play error:", error);
+                });
             }
+        } else {
+            console.error("Sound element not found:", soundId);
+        }
+    }
+    
+    // Update the Voice Assistant button click handler
+    voiceAssistantBtn.addEventListener('click', function() {
+        if (recognitionActive) {
+            // Stop if already listening
+            if (recognition) {
+                recognition.stop();
+                showToast("Voice assistant stopped");
+            }
+            return;
+        }
+        
+        // First time initialization
+        if (!recognition && !initSpeechRecognition()) {
+            showToast("Voice recognition not available");
+            return; // Exit if initialization failed
+        }
+        
+        // Play the start sound
+        playSound('listenStartSound');
+        
+        // Show available commands
+        speakResponse("Hello, I'm listening. You can ask about your health metrics or navigate to other pages.");
+        
+        // Start listening after a brief delay
+        setTimeout(function() {
+            try {
+                recognition.start();
+            } catch (e) {
+                console.error("Speech recognition error:", e);
+                // If recognition is already started, stop and restart
+                recognition.stop();
+                setTimeout(function() {
+                    recognition.start();
+                }, 300);
+            }
+        }, 1500);
+    });
+    
+    // Update the processVoiceCommand function with navigation capabilities
+    function processVoiceCommand(command) {
+        console.log("Processing command:", command);
+        let matchFound = false;
+        
+        // Navigation commands to other pages
+        if (command.includes('home') || command.includes('dashboard')) {
+            matchFound = true;
+            voiceResult.textContent = 'Navigating to home page';
+            speakResponse("Taking you to the home page");
             
-            function showToast(message) {
-                var existingToast = document.getElementById('accessibilityToast');
-                if (existingToast) {
-                    existingToast.remove();
-                }
-                
-                var toast = document.createElement('div');
-                toast.id = 'accessibilityToast';
-                toast.innerText = message;
-                toast.style.position = 'fixed';
-                toast.style.bottom = '30px';
-                toast.style.left = '50%';
-                toast.style.transform = 'translateX(-50%)';
-                toast.style.backgroundColor = 'rgba(0, 150, 173, 0.9)';
-                toast.style.color = 'white';
-                toast.style.padding = '15px 25px';
-                toast.style.borderRadius = '30px';
-                toast.style.fontSize = '18px';
-                toast.style.fontWeight = 'bold';
-                toast.style.zIndex = '2000';
-                toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-                
-                document.body.appendChild(toast);
+            setTimeout(function() {
+                window.location.href = '../index.php';
+            }, 1500);
+            return;
+        }
+        
+        if (command.includes('medication') || command.includes('medicine') || command.includes('pill')) {
+            if (command.includes('tracking') || command.includes('page') || command.includes('go to')) {
+                matchFound = true;
+                voiceResult.textContent = 'Navigating to medication tracking';
+                speakResponse("Taking you to medication tracking");
                 
                 setTimeout(function() {
-                    if (toast.parentNode) {
-                        toast.classList.add('toast-fade-out');
-                        setTimeout(function() {
-                            if (toast.parentNode) {
-                                toast.parentNode.removeChild(toast);
-                            }
-                        }, 300);
+                    window.location.href = '../medication-tracking/medication-tracking.php';
+                }, 1500);
+                return;
+            } else {
+                // Show medication section on current page
+                matchFound = true;
+                voiceResult.textContent = 'Showing your medication information';
+                speakResponse("Here is your medication schedule for today");
+                
+                setTimeout(() => {
+                    const medSection = document.querySelector('.health-section:nth-of-type(1)');
+                    if (medSection) {
+                        safeScrollTo(medSection);
+                        highlightElement(medSection);
                     }
-                }, 3000);
+                }, 500);
+                return;
             }
-        </script>
+        }
+        
+        if (command.includes('social') || command.includes('connect') || command.includes('friend')) {
+            matchFound = true;
+            voiceResult.textContent = 'Navigating to social connection';
+            speakResponse("Taking you to social connection page");
+            
+            setTimeout(function() {
+                window.location.href = '../social_connection/social_connection.php';
+            }, 1500);
+            return;
+        }
+        
+        if (command.includes('news') || command.includes('headlines')) {
+            matchFound = true;
+            voiceResult.textContent = 'Navigating to daily news';
+            speakResponse("Taking you to daily news page");
+            
+            setTimeout(function() {
+                window.location.href = '../daily-news-app/daily-news.php';
+            }, 1500);
+            return;
+        }
+        
+        if (command.includes('emergency') || command.includes('contact')) {
+            matchFound = true;
+            voiceResult.textContent = 'Navigating to emergency contacts';
+            speakResponse("Taking you to emergency contacts");
+            
+            setTimeout(function() {
+                window.location.href = '../emergency-contacts.php';
+            }, 1500);
+            return;
+        }
+        
+        // Handle health monitoring specific commands for this page
+        if (command.includes('blood pressure') || command.includes('bp')) {
+            matchFound = true;
+            voiceResult.textContent = 'Showing blood pressure readings';
+            speakResponse("Your blood pressure is 120 over 80, which is normal");
+            
+            setTimeout(() => {
+                const bpCard = document.querySelector('.metric-card:nth-of-type(1)');
+                if (bpCard) {
+                    safeScrollTo(bpCard);
+                    highlightElement(bpCard);
+                }
+            }, 500);
+            return;
+        }
+        
+        if (command.includes('heart rate') || command.includes('pulse')) {
+            matchFound = true;
+            voiceResult.textContent = 'Showing heart rate information';
+            speakResponse("Your heart rate is 72 beats per minute, which is normal");
+            
+            setTimeout(() => {
+                const heartCard = document.querySelector('.metric-card:nth-of-type(2)');
+                if (heartCard) {
+                    safeScrollTo(heartCard);
+                    highlightElement(heartCard);
+                }
+            }, 500);
+            return;
+        }
+        
+        if (command.includes('blood sugar') || command.includes('glucose')) {
+            matchFound = true;
+            voiceResult.textContent = 'Showing blood sugar readings';
+            speakResponse("Your blood sugar is 110 milligrams per deciliter. This is slightly elevated and should be monitored.");
+            
+            setTimeout(() => {
+                const sugarCard = document.querySelector('.metric-card:nth-of-type(3)');
+                if (sugarCard) {
+                    safeScrollTo(sugarCard);
+                    highlightElement(sugarCard);
+                }
+            }, 500);
+            return;
+        }
+        
+        if (command.includes('oxygen') || command.includes('o2')) {
+            matchFound = true;
+            voiceResult.textContent = 'Showing oxygen levels';
+            speakResponse("Your oxygen level is 98 percent, which is normal");
+            
+            setTimeout(() => {
+                const oxygenCard = document.querySelector('.metric-card:nth-of-type(4)');
+                if (oxygenCard) {
+                    safeScrollTo(oxygenCard);
+                    highlightElement(oxygenCard);
+                }
+            }, 500);
+            return;
+        }
+        
+        if (command.includes('appointment') || command.includes('doctor') || 
+           (command.includes('when') && (command.includes('next') || command.includes('my')))) {
+            matchFound = true;
+            voiceResult.textContent = 'Showing your upcoming appointments';
+            speakResponse("Here are your upcoming appointments");
+            
+            setTimeout(() => {
+                const appointmentSection = document.querySelector('.health-section:nth-of-type(2)');
+                if (appointmentSection) {
+                    safeScrollTo(appointmentSection);
+                    highlightElement(appointmentSection);
+                }
+            }, 500);
+            return;
+        }
+        
+        // Health tips commands
+        if (command.includes('tip') || command.includes('advice')) {
+            matchFound = true;
+            voiceResult.textContent = 'Showing health tips for you';
+            speakResponse("Here are some health tips that might be helpful for you");
+            
+            setTimeout(() => {
+                const tipSection = document.querySelector('.health-section:nth-of-type(3)');
+                if (tipSection) {
+                    safeScrollTo(tipSection);
+                    highlightElement(tipSection);
+                }
+            }, 500);
+            return;
+        }
+        
+        // Accessibility commands
+        if (command.includes('bigger') || command.includes('larger') || (command.includes('increase') && command.includes('size'))) {
+            matchFound = true;
+            voiceResult.textContent = 'Making text bigger';
+            speakResponse("Increasing text size for better visibility");
+            increaseFontSize();
+            return;
+        }
+        
+        if (command.includes('smaller') || (command.includes('decrease') && command.includes('size'))) {
+            matchFound = true;
+            voiceResult.textContent = 'Making text smaller';
+            speakResponse("Decreasing text size");
+            decreaseFontSize();
+            return;
+        }
+        
+        if (command.includes('contrast')) {
+            matchFound = true;
+            voiceResult.textContent = 'Toggling high contrast mode';
+            speakResponse("Changing to high contrast mode for better visibility");
+            toggleHighContrast();
+            return;
+        }
+        
+        if (command.includes('read') || command.includes('speak')) {
+            matchFound = true;
+            voiceResult.textContent = 'Reading page content';
+            readPageContent();
+            return;
+        }
+        
+        // If no match found
+        if (!matchFound) {
+            playSound('commandNotRecognizedSound');
+            voiceResult.textContent = "Sorry, I didn't understand that command.";
+            speakResponse("I didn't understand. You can say things like 'check my blood pressure', 'show my medications', or 'go to social connection'.");
+        }
+    }
+
+    // Initialize speech recognition with improved handling
+    function initSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            // Recognition started
+            recognition.onstart = function() {
+                recognitionActive = true;
+                voiceAssistantBtn.classList.add('listening');
+                voiceFeedback.style.display = 'block';
+                voiceResult.textContent = 'Listening...';
+            };
+            
+            // Results received
+            recognition.onresult = function(event) {
+                let transcript = '';
+                if (event.results && event.results.length > 0) {
+                    transcript = event.results[0][0].transcript;
+                    voiceResult.textContent = transcript;
+                    
+                    // Process command immediately
+                    processVoiceCommand(transcript.toLowerCase().trim());
+                } else {
+                    voiceResult.textContent = "I didn't catch that";
+                    speakResponse("I didn't catch that. Please try again.");
+                }
+            };
+            
+            
+            // Recognition ended
+            recognition.onend = function() {
+                recognitionActive = false;
+                voiceAssistantBtn.classList.remove('listening');
+                setTimeout(function() {
+                    voiceFeedback.style.display = 'none';
+                }, 1000);
+            };
+            
+            // Error handling
+            recognition.onerror = function(event) {
+                recognitionActive = false;
+                voiceAssistantBtn.classList.remove('listening');
+                playSound('commandNotRecognizedSound');
+                console.error("Speech recognition error:", event.error);
+                
+                let errorMessage = "There was a problem with voice recognition";
+                switch(event.error) {
+                    case 'network':
+                        errorMessage = "Network error occurred. Check your internet connection.";
+                        break;
+                    case 'not-allowed':
+                    case 'service-not-allowed':
+                        errorMessage = "Microphone access denied. Please allow microphone access.";
+                        break;
+                    case 'aborted':
+                        errorMessage = "Voice recognition was aborted";
+                        break;
+                    case 'audio-capture':
+                        errorMessage = "Could not detect any sound. Check your microphone.";
+                        break;
+                    case 'no-speech':
+                        errorMessage = "No speech was detected. Please try again.";
+                        break;
+                }
+                
+                voiceResult.textContent = 'Error: ' + errorMessage;
+                speakResponse(errorMessage);
+                
+                setTimeout(function() {
+                    voiceFeedback.style.display = 'none';
+                }, 3000);
+            };
+            
+            return true;
+        } else {
+            alert("Voice recognition is not supported in your browser. Try using Chrome for best experience.");
+            return false;
+        }
+    }
+</script>
+
+<audio id="listenStartSound" preload="auto">
+    <source src="../sounds/listen-start.mp3" type="audio/mpeg">
+    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+</audio>
+
+<audio id="commandRecognizedSound" preload="auto">
+    <source src="../sounds/command-recognized.mp3" type="audio/mpeg">
+    <source src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" type="audio/ogg">
+</audio>
+
+<audio id="commandNotRecognizedSound" preload="auto">
+    <source src="../sounds/command-error.mp3" type="audio/mpeg">
+    <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" type="audio/ogg">
+</audio>
     </body>
 </html>

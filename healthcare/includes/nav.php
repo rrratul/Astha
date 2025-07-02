@@ -85,12 +85,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <span>Health Records</span>
                         </a>
                     </li>
-                    <li class="nav-item <?php echo $current_page == 'prescriptions.php' ? 'active' : ''; ?>">
-                        <a href="prescriptions.php" class="nav-link">
-                            <i class="fas fa-prescription"></i>
-                            <span>Prescriptions</span>
-                        </a>
-                    </li>
+                  
                 </ul>
             </nav>
             

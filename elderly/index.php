@@ -554,20 +554,229 @@ $user_role = $_SESSION['user_role'];
         
         <script>
             // Voice Assistant functionality
+            let recognition;
+            let isListening = false;
+            
             document.querySelector('.voice-assistant').addEventListener('click', function() {
-                alert("Voice Assistant: Say commands like 'open health', 'show medications', 'read news', or 'call help' to navigate the app.");
+                if (isListening) {
+                    stopVoiceRecognition();
+                    return;
+                }
                 
-                // In a real implementation, you would use the Web Speech API here
-                // Example: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
-                
-                if ('webkitSpeechRecognition' in window) {
-                    // Voice recognition capabilities available
-                    console.log("Voice recognition supported");
-                    // Implementation would go here
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    startVoiceRecognition();
                 } else {
                     alert("Voice recognition is not supported in your browser. Try using Chrome for best experience.");
                 }
             });
+            
+            function startVoiceRecognition() {
+                // Initialize SpeechRecognition object
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                // Change button appearance to show it's active
+                document.querySelector('.voice-assistant').classList.add('active');
+                document.querySelector('.voice-assistant').style.backgroundColor = '#ff6347';
+                isListening = true;
+                
+                // Play start sound
+                playSound('listenStartSound');
+                
+                // Show listening indicator
+                showToast("Listening... Say a command");
+                
+                recognition.onstart = function() {
+                    console.log("Voice recognition started");
+                };
+                
+                recognition.onresult = function(event) {
+                    const command = event.results[0][0].transcript.toLowerCase().trim();
+                    console.log("Voice command recognized: " + command);
+                    processVoiceCommand(command);
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error("Voice recognition error", event.error);
+                    playSound('commandNotRecognizedSound');
+                    stopVoiceRecognition();
+                    showToast("Voice recognition error: " + event.error);
+                };
+                
+                recognition.onend = function() {
+                    stopVoiceRecognition();
+                };
+                
+                // Start listening
+                recognition.start();
+            }
+            
+            function stopVoiceRecognition() {
+                if (recognition) {
+                    recognition.stop();
+                }
+                document.querySelector('.voice-assistant').classList.remove('active');
+                document.querySelector('.voice-assistant').style.backgroundColor = '';
+                isListening = false;
+            }
+            
+            function processVoiceCommand(command) {
+                // Map of voice commands to URLs
+                const commandMap = {
+                    // Health-related commands
+                    "open health": "./health-monitoring/health-monitoring.php",
+                    "show health": "./health-monitoring/health-monitoring.php",
+                    "health monitoring": "./health-monitoring/health-monitoring.php",
+                    
+                    // Medication-related commands
+                    "open medication": "./medication-tracking/medication-tracking.php",
+                    "show medication": "./medication-tracking/medication-tracking.php", 
+                    "show meds": "./medication-tracking/medication-tracking.php",
+                    "take meds": "./medication-tracking/medication-tracking.php",
+                    "take medication": "./medication-tracking/medication-tracking.php",
+                    
+                    // Social-related commands
+                    "open social": "./social_connection/social_connection.php",
+                    "show social": "./social_connection/social_connection.php",
+                    "connect": "./social_connection/social_connection.php",
+                    "social connection": "./social_connection/social_connection.php",
+                    
+                    // Emergency-related commands
+                    "emergency": "./emergency-contacts.php",
+                    "emergency contacts": "./emergency-contacts.php",
+                    "show contacts": "./emergency-contacts.php",
+                    "help": "./emergency-contacts.php",
+                    "call help": "./emergency-contacts.php",
+                    
+                    // Mood tracking commands
+                    "track mood": "./mood-tracking.php",
+                    "mood tracking": "./mood-tracking.php",
+                    "show mood": "./mood-tracking.php",
+                    
+                    // Financial commands
+                    "show financial": "./financial/",
+                    "financial assistance": "./financial/",
+                    
+                    // News commands
+                    "read news": "./daily-news-app/daily-news.php",
+                    "show news": "./daily-news-app/daily-news.php",
+                    "open news": "./daily-news-app/daily-news.php",
+                    
+                    // Home command
+                    "go home": "./index.php",
+                    "home page": "./index.php"
+                };
+                
+                // Check if command matches any in our map
+                let matchFound = false;
+                
+                for (const [phrase, url] of Object.entries(commandMap)) {
+                    if (command.includes(phrase)) {
+                        speakResponse(`Navigating to ${phrase}...`);
+                        showToast(`Navigating to ${phrase}...`);
+                        setTimeout(() => {
+                            window.location.href = url;
+                        }, 1500); // Small delay to show the toast and speak response
+                        matchFound = true;
+                        break;
+                    }
+                }
+                
+                // Handle commands for emergency button
+                if (command.includes("emergency") && !matchFound) {
+                    document.querySelector('.emergency-button').click();
+                    matchFound = true;
+                }
+                
+                // Handle accessibility commands
+                if (command.includes("increase size") || command.includes("bigger text")) {
+                    increaseFontSize();
+                    speakResponse("Increasing text size for better visibility");
+                    matchFound = true;
+                }
+                
+                if (command.includes("decrease size") || command.includes("smaller text")) {
+                    decreaseFontSize();
+                    speakResponse("Decreasing text size");
+                    matchFound = true;
+                }
+                
+                if (command.includes("high contrast") || command.includes("toggle contrast")) {
+                    toggleHighContrast();
+                    speakResponse("Toggling high contrast mode");
+                    matchFound = true;
+                }
+                
+                if (command.includes("read page") || command.includes("read content")) {
+                    readPageContent();
+                    matchFound = true;
+                }
+                
+                if (!matchFound) {
+                    playSound('commandNotRecognizedSound');
+                    showToast("Command not recognized. Try again.");
+                    speakResponse("I didn't understand that command. Please try again.");
+                }
+            }
+            
+            // Add the missing speakResponse function
+            function speakResponse(text) {
+                if ('speechSynthesis' in window) {
+                    // Play the recognized sound
+                    playSound('commandRecognizedSound');
+                    
+                    // Cancel any ongoing speech first
+                    window.speechSynthesis.cancel();
+                    
+                    // Small delay to ensure cancellation completed
+                    setTimeout(() => {
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        utterance.rate = 0.9;  // Slightly slower for elderly users
+                        utterance.pitch = 1;
+                        utterance.volume = 1;
+                        
+                        // Get available voices and try to select a good one
+                        let voices = window.speechSynthesis.getVoices();
+                        if (voices.length > 0) {
+                            // Try to find a natural-sounding English voice
+                            const preferredVoice = voices.find(voice => 
+                                voice.name.includes('Google') && voice.name.includes('English')) ||
+                                voices.find(voice => voice.lang.includes('en-') && voice.name.includes('Female')) ||
+                                voices[0];
+                                
+                            if (preferredVoice) {
+                                utterance.voice = preferredVoice;
+                            }
+                        }
+                        
+                        // Speak the response
+                        window.speechSynthesis.speak(utterance);
+                    }, 100);
+                }
+            }
+            
+            // Add the playSound function
+            function playSound(soundId) {
+                const sound = document.getElementById(soundId);
+                if (sound) {
+                    // Reset to beginning if already playing
+                    sound.pause();
+                    sound.currentTime = 0;
+                    
+                    // Play the sound with error handling
+                    const playPromise = sound.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.error("Sound play error:", error);
+                        });
+                    }
+                } else {
+                    console.error("Sound element not found:", soundId);
+                }
+            }
             
             // Enhanced Accessibility Functions
             let currentFontSize = 100; // percentage
@@ -719,24 +928,6 @@ $user_role = $_SESSION['user_role'];
                 }, 3000);
             }
             
-            // Add a simple text-to-speech function for important content
-            function speakText(text) {
-                if ('speechSynthesis' in window) {
-                    var utterance = new SpeechSynthesisUtterance(text);
-                    window.speechSynthesis.speak(utterance);
-                }
-            }
-            
-            // Initialize tooltips for better explanation of features
-            document.querySelectorAll('.feature-card').forEach(function(card) {
-                card.addEventListener('mouseover', function() {
-                    var featureName = this.querySelector('h2').textContent;
-                    var featureDesc = this.querySelector('p').textContent;
-                    console.log("Hovering over: " + featureName);
-                    // Additional functionality could be added here
-                });
-            });
-            
             // Emergency button functionality
             document.querySelector('.emergency-button').addEventListener('click', function() {
                 if (confirm("Do you need emergency assistance? Press OK to call for help.")) {
@@ -745,5 +936,21 @@ $user_role = $_SESSION['user_role'];
                 }
             });
         </script>
+
+        <!-- Add these audio elements right before the closing </body> tag -->
+<audio id="listenStartSound" preload="auto">
+    <source src="./sounds/listen-start.mp3" type="audio/mpeg">
+    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+</audio>
+
+<audio id="commandRecognizedSound" preload="auto">
+    <source src="./sounds/command-recognized.mp3" type="audio/mpeg">
+    <source src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" type="audio/ogg">
+</audio>
+
+<audio id="commandNotRecognizedSound" preload="auto">
+    <source src="./sounds/command-error.mp3" type="audio/mpeg">
+    <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" type="audio/ogg">
+</audio>
     </body>
 </html>

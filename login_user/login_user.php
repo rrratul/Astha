@@ -12,10 +12,10 @@ if (isLoggedIn()) {
             header("Location: ../elderly/index.php");
             break;
         case 'caregiver':
-            header("Location: ../caregiver/index.php");
+            header("Location: ../caregivers/index.php");
             break;
         case 'family_member':
-            header("Location: ../family/index.php");
+            header("Location: ../relative/index.php");
             break;
         case 'healthcare_provider':
             header("Location: ../healthcare/index.php");
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header("Location: ../caregiver/index.php");
                         break;
                     case 'family_member':
-                        header("Location: ../family/index.php");
+                        header("Location: ../relative/index.php");
                         break;
                     case 'healthcare_provider':
                         header("Location: ../healthcare/index.php");
@@ -220,7 +220,7 @@ if (!isLoggedIn() && isset($_COOKIE['remember_token'])) {
                 header("Location: ../caregiver/index.php");
                 break;
             case 'family_member':
-                header("Location: ../family/index.php");
+                header("Location: ../relative/index.php");
                 break;
             case 'healthcare_provider':
                 header("Location: ../healthcare/index.php");
