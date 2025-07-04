@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2023-12-01T00:00:00.000Z" agent="5.0" etag="abc123" version="22.1.16" type="device">
+  <diagram id="soundscape-bd-dataset" name="Soundscape-BD Dataset Structure">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Root Dataset -->
+        <mxCell id="root" value="Soundscape-BD Dataset&#xa;Complete Urban Sound Classification Dataset" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fontStyle=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="600" y="40" width="200" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Top Level Folders -->
+        <mxCell id="audio_folder" value="📁 audio/&#xa;Raw audio recordings&#xa;10 classes × 1,000 files each" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="150" y="200" width="180" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="metadata_folder" value="📁 metadata/&#xa;Annotations &amp; labels&#xa;CSV files, JSON metadata" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="400" y="200" width="180" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="preprocessed_folder" value="📁 preprocessed/&#xa;Processed features&#xa;Spectrograms, MFCC, etc." style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="650" y="200" width="180" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="documentation_folder" value="📁 documentation/&#xa;Dataset description&#xa;README, papers, guides" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="900" y="200" width="180" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections from root to top level -->
+        <mxCell id="root_to_audio" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="root" target="audio_folder">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="300" as="sourcePoint" />
+            <mxPoint x="550" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="root_to_metadata" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.42;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="root" target="metadata_folder">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="660" y="130" as="sourcePoint" />
+            <mxPoint x="250" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="root_to_preprocessed" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.58;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="root" target="preprocessed_folder">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="694" y="130" as="sourcePoint" />
+            <mxPoint x="500" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="root_to_documentation" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="root" target="documentation_folder">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="726" y="130" as="sourcePoint" />
+            <mxPoint x="750" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Audio Class Subfolders -->
+        <mxCell id="rickshaw_class" value="🛺 rickshaw/&#xa;1,000 .wav files&#xa;Traditional rickshaw sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="350" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="car_class" value="🚗 car/&#xa;1,000 .wav files&#xa;Private vehicle sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="160" y="350" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="bike_class" value="🏍️ bike/&#xa;1,000 .wav files&#xa;Motorcycle sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="300" y="350" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="construction_class" value="🚧 construction/&#xa;1,000 .wav files&#xa;Construction site sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="cng_class" value="🚕 cng/&#xa;1,000 .wav files&#xa;CNG auto-rickshaw" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="160" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="bus_class" value="🚌 bus/&#xa;1,000 .wav files&#xa;Public bus sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="300" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="truck_class" value="🚛 truck/&#xa;1,000 .wav files&#xa;Heavy truck sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="530" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ambulance_class" value="🚑 ambulance/&#xa;1,000 .wav files&#xa;Emergency vehicle" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="160" y="530" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="police_class" value="🚓 police/&#xa;1,000 .wav files&#xa;Police vehicle sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="300" y="530" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="factory_class" value="🏭 factory/&#xa;1,000 .wav files&#xa;Industrial sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="mixed_class" value="🔀 mixed/&#xa;1,000 .wav files&#xa;Combined urban sounds" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="160" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections from audio folder to classes -->
+        <mxCell id="audio_to_rickshaw" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="audio_folder" target="rickshaw_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_car" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="audio_folder" target="car_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_bike" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.9;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="audio_folder" target="bike_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_construction" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="audio_folder" target="construction_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_cng" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="audio_folder" target="cng_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_bus" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.9;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="audio_folder" target="bus_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_truck" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="audio_folder" target="truck_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_ambulance" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="audio_folder" target="ambulance_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_police" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.9;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="audio_folder" target="police_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_factory" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="audio_folder" target="factory_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="audio_to_mixed" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="audio_folder" target="mixed_class">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Metadata Subfolders -->
+        <mxCell id="labels_file" value="📄 labels.csv&#xa;Class labels mapping&#xa;sound_id, class, location" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="420" y="350" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="annotations_file" value="📄 annotations.json&#xa;Detailed metadata&#xa;timestamps, coordinates" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="420" y="430" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="dataset_info" value="📄 dataset_info.txt&#xa;Collection details&#xa;recording specs, devices" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="420" y="510" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Metadata connections -->
+        <mxCell id="metadata_to_labels" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="metadata_folder" target="labels_file">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="400" as="sourcePoint" />
+            <mxPoint x="550" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="metadata_to_annotations" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="metadata_folder" target="annotations_file">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="400" as="sourcePoint" />
+            <mxPoint x="550" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="metadata_to_info" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="metadata_folder" target="dataset_info">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="400" as="sourcePoint" />
+            <mxPoint x="550" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Preprocessed Subfolders -->
+        <mxCell id="spectrograms" value="📁 spectrograms/&#xa;.png files&#xa;Visual representations" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="670" y="350" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="mfcc" value="📁 mfcc/&#xa;.npy files&#xa;Feature vectors" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="670" y="430" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="normalized" value="📁 normalized/&#xa;.wav files&#xa;Volume normalized audio" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="670" y="510" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Preprocessed connections -->
+        <mxCell id="preprocessed_to_spectrograms" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="preprocessed_folder" target="spectrograms">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="400" as="sourcePoint" />
+            <mxPoint x="800" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="preprocessed_to_mfcc" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="preprocessed_folder" target="mfcc">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="400" as="sourcePoint" />
+            <mxPoint x="800" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="preprocessed_to_normalized" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="preprocessed_folder" target="normalized">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="400" as="sourcePoint" />
+            <mxPoint x="800" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Documentation Subfolders -->
+        <mxCell id="readme" value="📄 README.md&#xa;Dataset overview&#xa;Usage instructions" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="920" y="350" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="paper" value="📄 research_paper.pdf&#xa;Academic publication&#xa;Methodology & results" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="920" y="430" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="license" value="📄 LICENSE&#xa;Usage terms&#xa;Attribution requirements" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="920" y="510" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Documentation connections -->
+        <mxCell id="documentation_to_readme" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="documentation_folder" target="readme">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1000" y="400" as="sourcePoint" />
+            <mxPoint x="1050" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="documentation_to_paper" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="documentation_folder" target="paper">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1000" y="400" as="sourcePoint" />
+            <mxPoint x="1050" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="documentation_to_license" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="documentation_folder" target="license">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1000" y="400" as="sourcePoint" />
+            <mxPoint x="1050" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Summary Statistics -->
+        <mxCell id="stats_box" value="📊 Dataset Statistics&#xa;• Total Audio Files: 10,000&#xa;• Audio Classes: 10&#xa;• Files per Class: 1,000&#xa;• Format: 16-bit WAV&#xa;• Sample Rate: 44.1 kHz&#xa;• Duration: ~10 hours total&#xa;• File Size: ~2.5 GB" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="350" width="200" height="140" as="geometry" />
+        </mxCell>
+        
+        <!-- File format legend -->
+        <mxCell id="legend_title" value="📝 File Format Legend" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="500" y="730" width="160" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_wav" value="🎵 .wav - Raw audio recordings" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="770" width="160" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_csv" value="📊 .csv - Tabular metadata" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="790" width="160" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_json" value="🔧 .json - Structured metadata" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="810" width="160" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_npy" value="🧮 .npy - NumPy feature arrays" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="830" width="160" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_png" value="🖼️ .png - Spectrogram images" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="850" width="160" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_pdf" value="📄 .pdf/.md - Documentation" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="870" width="160" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- Title -->
+        <mxCell id="title_text" value="Soundscape-BD: Urban Sound Classification Dataset for Bangladesh" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="10" width="600" height="20" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,50 @@
+Soundscape-BD Dataset Structure
+================================
+
+Soundscape-BD Dataset
+├── 📁 audio/ (Raw audio recordings - 10 classes × 1,000 files each)
+│   ├── 🛺 rickshaw/ (1,000 .wav files - Traditional rickshaw sounds)
+│   ├── 🚗 car/ (1,000 .wav files - Private vehicle sounds)
+│   ├── 🏍️ bike/ (1,000 .wav files - Motorcycle sounds)
+│   ├── 🚧 construction/ (1,000 .wav files - Construction site sounds)
+│   ├── 🚕 cng/ (1,000 .wav files - CNG auto-rickshaw)
+│   ├── 🚌 bus/ (1,000 .wav files - Public bus sounds)
+│   ├── 🚛 truck/ (1,000 .wav files - Heavy truck sounds)
+│   ├── 🚑 ambulance/ (1,000 .wav files - Emergency vehicle)
+│   ├── 🚓 police/ (1,000 .wav files - Police vehicle sounds)
+│   ├── 🏭 factory/ (1,000 .wav files - Industrial sounds)
+│   └── 🔀 mixed/ (1,000 .wav files - Combined urban sounds)
+│
+├── 📁 metadata/ (Annotations & labels)
+│   ├── 📄 labels.csv (Class labels mapping - sound_id, class, location)
+│   ├── 📄 annotations.json (Detailed metadata - timestamps, coordinates)
+│   └── 📄 dataset_info.txt (Collection details - recording specs, devices)
+│
+├── 📁 preprocessed/ (Processed features)
+│   ├── 📁 spectrograms/ (.png files - Visual representations)
+│   ├── 📁 mfcc/ (.npy files - Feature vectors)
+│   └── 📁 normalized/ (.wav files - Volume normalized audio)
+│
+└── 📁 documentation/ (Dataset description)
+    ├── 📄 README.md (Dataset overview - Usage instructions)
+    ├── 📄 research_paper.pdf (Academic publication - Methodology & results)
+    └── 📄 LICENSE (Usage terms - Attribution requirements)
+
+Dataset Statistics:
+==================
+• Total Audio Files: 10,000
+• Audio Classes: 11 (10 individual + 1 mixed)
+• Files per Class: 1,000
+• Format: 16-bit WAV
+• Sample Rate: 44.1 kHz
+• Duration: ~10 hours total
+• File Size: ~2.5 GB
+
+File Format Legend:
+==================
+🎵 .wav - Raw audio recordings
+📊 .csv - Tabular metadata
+🔧 .json - Structured metadata  
+🧮 .npy - NumPy feature arrays
+🖼️ .png - Spectrogram images
+📄 .pdf/.md - Documentation
