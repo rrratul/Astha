@@ -1,0 +1,80 @@
+# Unused Code Prevention - .gitignore
+
+# Log files
+*.log
+*.txt
+error_log
+
+# Debug files
+*debug*.php
+*debug*.log
+debug_session.php
+profile_debug.php
+
+# Test files (unless in proper test directories)
+test.php
+*_test.php
+test_*.php
+
+# Backup and temporary files
+*copy.php
+*backup.php
+*old.php
+*.bak
+*.orig
+*.tmp
+*~
+.swp
+
+# Development files
+unused_code_detector.php
+cleanup_unused_files.php
+
+# Generated files
+*.cache
+*.pid
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependency directories
+vendor/
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# PHPMailer (if not needed in repo)
+PHPMailer-master/
+
+# Composer
+composer.phar
+
+# Session files
+*.session
+*.sess
+
+# Upload directories (if not needed in repo)
+uploads/temp/
+temp/
+
+# Error logs
+php_errors.log
+error.log
+access.log
