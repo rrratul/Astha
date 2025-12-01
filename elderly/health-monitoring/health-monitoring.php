@@ -104,8 +104,8 @@ function formatMedicationTime($timeString) {
 
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Shohochor - Health Monitoring</title>
-        <meta name="description" content="Monitor your health metrics, track vital signs and manage your wellness with Shohochor's easy-to-use health monitoring system.">
+        <title>ASTHA - Health Monitoring</title>
+        <meta name="description" content="Monitor your health metrics, track vital signs and manage your wellness with ASTHA's easy-to-use health monitoring system.">
         <link href="./health-monitoring.php" rel="canonical">
         <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">

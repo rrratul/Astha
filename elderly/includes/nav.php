@@ -141,7 +141,7 @@ define('INCLUDED_IN_PAGE', true);
         <div class="ui-header-logo">
             <a role="link" aria-label="Home" href="../index.php" style="text-decoration: none;">
                 <div class="logo">
-                    <span class="sho">Sho</span><span class="chor">hochor</span>
+                    <span class="sho">As</span><span class="chor">tha</span>
                 </div>
             </a>
         </div>

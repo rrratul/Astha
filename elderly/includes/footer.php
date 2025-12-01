@@ -1,4 +1,4 @@
-<!-- filepath: c:\xampp\htdocs\Shohochor\includes\footer.php -->
+<!-- filepath: c:\xampp\htdocs\ASTHA\includes\footer.php -->
 <footer class="ui-footer">
     <div class="ui-footer-container">
         <!-- Main Footer Content -->
@@ -6,7 +6,7 @@
             <!-- Brand Column -->
             <div class="ui-footer-brand">
                 <div class="ui-footer-logo">
-                    <h3><span class="sho">Sho</span><span class="chor">hochor</span></h3>
+                    <h3><span class="sho">As</span><span class="chor">tha</span></h3>
                 </div>
                 <p class="ui-footer-tagline">Empowering elderly care through innovative AI solutions</p>
                 <div class="ui-footer-social">
@@ -65,7 +65,7 @@
         <div class="ui-footer-contact">
             <div class="ui-footer-contact-item">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12.713l-11.985-9.713h23.97l-11.985 9.713zm0 2.574l-12-9.725v15.438h24v-15.438l-12 9.725z"/></svg>
-                <a href="mailto:contact@shohochor.com">contact@shohochor.com</a>
+                <a href="mailto:contact@ASTHA.com">contact@ASTHA.com</a>
             </div>
             <div class="ui-footer-contact-item">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22.621l-3.521-6.795c-.008.004-1.974.97-2.064 1.011-2.24 1.086-6.799-7.82-4.609-8.994l2.083-1.026-3.493-6.817-2.106 1.039c-7.202 3.755 4.233 25.982 11.6 22.615.121-.055 2.102-1.029 2.11-1.033z"/></svg>
@@ -76,7 +76,7 @@
         <!-- Footer Bottom -->
         <div class="ui-footer-bottom">
             <div class="ui-footer-copyright">
-                <p>&copy; <?php echo date('Y'); ?> Shohochor - The Sad Lab Project. All rights reserved.</p>
+                <p>&copy; <?php echo date('Y'); ?> ASTHA - The Sad Lab Project. All rights reserved.</p>
             </div>
             <div class="ui-footer-badges">
                 <span class="ui-footer-badge">HIPAA Compliant</span>

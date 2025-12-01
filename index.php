@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Shohochor - Transforming Elderly Care Through Advanced AI Technology</title>
-        <meta name="description" content="Shohochor delivers clinically-validated AI solutions that enhance independence, proactive health monitoring, and quality of life for seniors through dignified technology.">
+        <title>ASTHA - Transforming Elderly Care Through Advanced AI Technology</title>
+        <meta name="description" content="ASTHA delivers clinically-validated AI solutions that enhance independence, proactive health monitoring, and quality of life for seniors through dignified technology.">
         
         <!-- Preload Critical Resources -->
         <link rel="preload" as="script" href="https://cdn.ampproject.org/v0.js">
@@ -35,10 +35,10 @@
         <meta name="msapplication-TileColor" content="#ffffff">
         <meta name="theme-color" content="#ffffff">
         <meta name="google-site-verification" content="x0uK-t_BlAn3B_lnlbwNIiNsoW1o-ALxX78JnLSwF1o"/>
-        <meta property="og:title" content="Shohochor - Transforming Elderly Care Through AI Technology">
+        <meta property="og:title" content="ASTHA - Transforming Elderly Care Through AI Technology">
         <meta property="og:description" content="Advanced AI-powered solutions designed to enhance independence, safety, and dignity in aging">
-        <meta property="og:image" content="https://shohochor.com/images/og-image.jpg">
-        <meta property="og:url" content="https://shohochor.com">
+        <meta property="og:image" content="https://ASTHA.com/images/og-image.jpg">
+        <meta property="og:url" content="https://ASTHA.com">
         <meta name="twitter:cpatented ard" content="summary_large_image">
         <!-- Add these two script tags to your <head> section -->
 <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
@@ -46,24 +46,20 @@
         <!-- Add this in the head section with your other scripts -->
 <script async custom-element="amp-carousel" src="https://cdn.ampproject.org/v0/amp-carousel-0.2.js"></script>
         <!-- Structured Data -->
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "Shohochor",
-          "url": "https://shohochor.com",
-          "logo": "https://shohochor.com/images/logo.png",
+        <script type="applicatCHASTHA",
+          "url": "https://astha.com",
+          "logo": "https://astha.com/images/logo.png",
           "description": "AI-powered elderly care technology solutions that enhance independence and quality of life.",
           "contactPoint": {
             "@type": "ContactPoint",
-            "telephone": "+1-800-456-7890",
+            "telephone": "01685337528",
             "contactType": "customer service",
             "availableLanguage": "English"
           },
           "sameAs": [
-            "https://twitter.com/shohochor",
-            "https://www.linkedin.com/company/shohochor",
-            "https://www.facebook.com/shohochortech"
+            "https://twitter.com/astha",
+            "https://www.linkedin.com/company/astha",
+            "https://www.facebook.com/astha"
           ]
         }
         </script>
@@ -95,7 +91,7 @@
                 <!-- Welcome Hero Section as Overlay -->
                 <div class="welcome-hero-overlay">
                     <div class="welcome-content">
-                        <h1>Welcome to Shohochor</h1>
+                        <h1>Welcome to Astha</h1>
                         <p class="hero-subtitle">Transforming Elderly Care Through Advanced AI Technology</p>
                         
                         <!-- Tags Section -->
@@ -314,18 +310,18 @@
                     </div>
                 </section>
                 
-                <!-- About The Shohochor Initiative Section -->
+                <!-- About The Astha Initiative Section -->
                 <section id="about" class="ui-index-section section-4">
                     <div class="ui-index-section-heading">
-                        <h2 class="title">About The Shohochor Initiative</h2>
+                        <h2 class="title">About The Astha Initiative</h2>
                     </div>
                     <div class="ui-index-section-content about-content">
                         <div class="about-col">
                             <h3 class="subtitle">Our Vision & Approach</h3>
-                            <p>The Shohochor Initiative represents a paradigm shift in elderly care technology, combining advanced machine learning algorithms with intuitive user interfaces specifically designed for senior users. Our comprehensive ecosystem addresses the complex challenges of aging through an integrated platform of services developed in collaboration with leading geriatric research institutions.</p>
+                            <p>The Astha Initiative represents a paradigm shift in elderly care technology, combining advanced machine learning algorithms with intuitive user interfaces specifically designed for senior users. Our comprehensive ecosystem addresses the complex challenges of aging through an integrated platform of services developed in collaboration with leading geriatric research institutions.</p>
                             
                             <h3 class="subtitle">Research & Development</h3>
-                            <p>Our proprietary algorithms are built on a foundation of 7+ years of clinical research and 25,000+ hours of in-field testing across diverse elderly populations. The Shohochor platform has been validated through three IRB-approved studies at major universities, with findings published in the Journal of Geriatric Care Technology and presented at the International Conference on Aging and Technology.</p>
+                            <p>Our proprietary algorithms are built on a foundation of 7+ years of clinical research and 25,000+ hours of in-field testing across diverse elderly populations. The Astha platform has been validated through three IRB-approved studies at major universities, with findings published in the Journal of Geriatric Care Technology and presented at the International Conference on Aging and Technology.</p>
                         </div>
                         
                         <div class="about-col">
@@ -333,7 +329,7 @@
                             <p>Founded by a multidisciplinary team of geriatric specialists, AI researchers, and senior advocates, our mission focuses on extending independent living while enhancing quality of life through dignified technology solutions. We believe in creating systems that adapt to seniors rather than requiring seniors to adapt to technology.</p>
                             
                             <h3 class="subtitle">Partnerships & Certification</h3>
-                            <p>Shohochor maintains strategic partnerships with healthcare providers across 17 states and has received certification from the National Institute on Aging for our evidence-based approach. Our technology complies with all HIPAA regulations and has achieved ISO 27001 certification for information security management.</p>
+                            <p> Astha maintains strategic partnerships with healthcare providers across 17 states and has received certification from the National Institute on Aging for our evidence-based approach. Our technology complies with all HIPAA regulations and has achieved ISO 27001 certification for information security management.</p>
                         </div>
                     </div>
                 </section>
@@ -346,11 +342,11 @@
                     <div class="ui-index-section-content contact-content">
                         <div class="contact-col">
                             <h3 class="subtitle">Technology Assessment Consultation</h3>
-                            <p>Our eldercare technology consultants are available to discuss how Shohochor can create a personalized care solution for your specific needs. Each consultation includes a comprehensive needs analysis and customized implementation plan.</p>
+                            <p>Our eldercare technology consultants are available to discuss how ASTHA can create a personalized care solution for your specific needs. Each consultation includes a comprehensive needs analysis and customized implementation plan.</p>
                             
                             <div class="contact-details">
                                 <h4>Solution Advisors</h4>
-                                <p><strong>Email:</strong> <a href="mailto:solutions@shohochor.com" class="contact-link">solutions@shohochor.com</a></p>
+                                <p><strong>Email:</strong> <a href="mailto:solutions@ASTHA.com" class="contact-link">solutions@ASTHA.com</a></p>
                                 <p><strong>Direct Line:</strong> <a href="tel:+18004567890" class="contact-link">+1 (800) 456-7890</a></p>
                                 <p><strong>Hours:</strong> Monday-Friday, 8:00 AM - 6:00 PM ET</p>
                             </div>
@@ -363,13 +359,13 @@
                         <div class="contact-col">
                             <h3 class="subtitle">Client Success Stories</h3>
                             <blockquote class="testimonial">
-                                <p>"The Shohochor platform has transformed our approach to eldercare management. Since implementing the system, we've seen a 42% reduction in emergency incidents and significant improvements in our residents' quality of life."</p>
+                                <p>"The Astha platform has transformed our approach to eldercare management. Since implementing the system, we've seen a 42% reduction in emergency incidents and significant improvements in our residents' quality of life."</p>
                                 <cite>— Dr. Elizabeth Chen, Medical Director, Silver Heights Senior Living</cite>
                             </blockquote>
                             
                             <div class="contact-support">
                                 <h4>Technical Support</h4>
-                                <p><strong>Existing clients:</strong> <a href="mailto:support@shohochor.com" class="contact-link">support@shohochor.com</a></p>
+                                <p><strong>Existing clients:</strong> <a href="mailto:support@ASTHA.com" class="contact-link">support@ASTHA.com</a></p>
                                 <p><strong>Support Line:</strong> <a href="tel:+18007894560" class="contact-link">+1 (800) 789-4560</a></p>
                                 <p><strong>Response Time:</strong> Within 2 business hours</p>
                             </div>
@@ -412,7 +408,7 @@
                     </div>
                     <div class="testimonial-slide">
                         <blockquote class="slider-testimonial">
-                            <p>"The Shohochor newsletter keeps me informed about innovations that help me care for my aging parents with dignity."</p>
+                            <p>"The ASTHA newsletter keeps me informed about innovations that help me care for my aging parents with dignity."</p>
                             <cite>— Sarah Williams, Family Caregiver</cite>
                         </blockquote>
                     </div>
@@ -2625,7 +2621,7 @@ if ('speechSynthesis' in window) {
         
         if (command.includes('about')) {
             voiceResult.textContent = 'Navigating to about section';
-            speakResponse("Here's information about the Shohochor Initiative");
+            speakResponse("Here's information about the ASTHA Initiative");
             
             setTimeout(() => {
                 document.getElementById('about').scrollIntoView({

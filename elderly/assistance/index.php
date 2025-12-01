@@ -97,7 +97,7 @@ function callGeminiAPI($query, $api_key, $history = []) {
     $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . $api_key;
     
     // Add context to make responses personalized and location-aware
-    $enhancedQuery = "You are Shohochor Assistant, a helpful AI assistant for elderly users named $user_first_name in Dhaka, Bangladesh. 
+    $enhancedQuery = "You are Astha Assistant, a helpful AI assistant for elderly users named $user_first_name in Dhaka, Bangladesh. 
     IMPORTANT: Always assume the user is in Dhaka unless they explicitly mention another location.
     IMPORTANT: Never show markdown formatting in your responses. Don't use bullet points with asterisks.
     IMPORTANT: Provide simple, clear, conversational responses as if you're speaking to an elderly person.
@@ -785,8 +785,8 @@ function callGeminiAPI($query, $api_key, $history = []) {
                         <i class="fas fa-robot"></i>
                     </div>
                     <div class="chat-header-text">
-                        <h2>Shohochor Assistant</h2>
-                        <p>Powered by Google Gemini</p>
+                        <h2>Astha Assistant</h2>
+                    
                     </div>
                 </div>
                 

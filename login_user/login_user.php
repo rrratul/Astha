@@ -244,7 +244,7 @@ if (!isLoggedIn() && isset($_COOKIE['remember_token'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Shohochor</title>
+    <title>Login - ASTHA</title>
     <link rel="stylesheet" href="./login.css">
 </head>
 <body>
@@ -258,7 +258,7 @@ if (!isLoggedIn() && isset($_COOKIE['remember_token'])) {
     
     <div class="login-container">
         <div class="form-heading">
-            <h1>Welcome Back to Shohochor</h1>
+            <h1>Welcome Back to ASTHA</h1>
             <p>Sign in to access your elderly care platform</p>
         </div>
         

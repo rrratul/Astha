@@ -106,7 +106,7 @@ $user_role = $_SESSION['user_role'];
 
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Shohochor - Your Personal Dashboard</title>
+        <title>ASTHA - Your Personal Dashboard</title>
         <meta name="description" content="Access your personalized elderly care dashboard with AI-powered health monitoring, social connections, and more.">
         <link href="./dashboard.php" rel="canonical">
         <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
